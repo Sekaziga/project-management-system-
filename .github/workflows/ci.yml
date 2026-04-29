@@ -45,13 +45,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
+      - - name: Run tests
         env:
           TZ: UTC
           PORT: 3333
-          HOST: 0.0.0.0
+          HOST: localhost
           NODE_ENV: test
+          LOG_LEVEL: info
           APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: http://localhost:3333
           DB_CONNECTION: postgres
           DB_HOST: localhost
           DB_PORT: 5432
