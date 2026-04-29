@@ -1,8 +1,5 @@
 name: CI/CD Pipeline
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   
-
 on:
   push:
     branches: [main]
@@ -31,11 +28,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24        ← changed from 20 to 24
 
       - name: Cache node_modules
         uses: actions/cache@v4
