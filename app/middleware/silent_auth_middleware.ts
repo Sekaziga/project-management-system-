@@ -9,6 +9,9 @@ import type { NextFn } from '@adonisjs/core/types/http'
  */
 export default class SilentAuthMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
+    // Hydrate auth.user when a valid session exists, but do not block guests.
+    await ctx.auth.check()
+
     return next()
   }
 }
