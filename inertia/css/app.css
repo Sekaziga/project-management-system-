@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --gray-1: oklch(98.5% 0 0);
   --gray-2: oklch(97% 0 0);
@@ -8,6 +12,18 @@
   --gray-8: oklch(37.1% 0 0);
   --gray-10: oklch(26.9% 0 0);
   --gray-12: oklch(14.5% 0 0);
+}
+
+.dark {
+  --gray-1: oklch(14.5% 0 0);
+  --gray-2: oklch(20.5% 0 0);
+  --gray-3: oklch(26.9% 0 0);
+  --gray-4: oklch(32% 0 0);
+  --gray-6: oklch(55.6% 0 0);
+  --gray-7: oklch(65% 0 0);
+  --gray-8: oklch(75% 0 0);
+  --gray-10: oklch(85% 0 0);
+  --gray-12: oklch(95% 0 0);
 }
 
 * {
@@ -45,42 +61,10 @@ h6 {
   color: var(--gray-12);
 }
 
-/* Header */
-header {
-  max-width: 1440px;
-  margin: auto;
-  padding: 0 30px;
-}
-header > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 64px;
-}
-header nav {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-}
-header nav a {
-  font-weight: 500;
-  color: var(--gray-8);
-}
-header nav a:hover,
-header nav a.current {
-  color: var(--gray-12);
-}
-
-/* Main */
+/* Main content area */
 main {
-  max-width: 1440px;
-  margin: 0 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: calc(100vh - 65px);
-  background: #fff;
-  border: 1px solid var(--gray-3);
 }
 
 .hero {
@@ -196,7 +180,7 @@ button:hover {
 
 /* Alerts */
 .alert {
-  background: #fff;
+  background: var(--gray-1);
   position: relative;
   padding: 12px 16px;
   font-size: 14px;

@@ -23,57 +23,57 @@ export default function ProjectsIndex({ projects }: { projects: Project[] }) {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Projects</h1>
+        <h1 className="text-2xl font-bold text-[var(--gray-12)]">Projects</h1>
         <Link
           href="/projects/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500"
         >
           + New Project
         </Link>
       </div>
 
       {projects.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           <p className="text-4xl mb-2">📁</p>
           <p>No projects yet. Create your first project!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {projects.map((project) => (
-            <div key={project.id} className="bg-white rounded-lg shadow p-5 border">
+            <div key={project.id} className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-2xl dark:shadow-black/30 p-5 border border-[var(--gray-3)]">
               <div className="flex justify-between items-start mb-2">
-                <h2 className="text-lg font-semibold">{project.name}</h2>
+                <h2 className="text-lg font-semibold text-[var(--gray-12)]">{project.name}</h2>
                 <span className={`text-xs px-2 py-1 rounded-full font-medium
-                  ${project.status === 'active' ? 'bg-green-100 text-green-700' : ''}
-                  ${project.status === 'completed' ? 'bg-blue-100 text-blue-700' : ''}
-                  ${project.status === 'archived' ? 'bg-gray-100 text-gray-700' : ''}
+                  ${project.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : ''}
+                  ${project.status === 'completed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : ''}
+                  ${project.status === 'archived' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' : ''}
                 `}>
                   {project.status}
                 </span>
               </div>
-              <p className="text-gray-500 text-sm mb-4">{project.description}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{project.description}</p>
               <div className="flex gap-2">
                 <Link
                   href={`/projects/${project.id}`}
-                  className="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200"
+                  className="text-sm bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-[var(--gray-8)]"
                 >
                   View
                 </Link>
                 <Link
                   href={`/projects/${project.id}/edit`}
-                  className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200"
+                  className="text-sm bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => archiveProject(project.id)}
-                  className="text-sm bg-yellow-100 text-yellow-700 px-3 py-1 rounded hover:bg-yellow-200"
+                  className="text-sm bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 px-3 py-1 rounded hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
                 >
                   Archive
                 </button>
                 <button
                   onClick={() => deleteProject(project.id)}
-                  className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200"
+                  className="text-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-3 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50"
                 >
                   Delete
                 </button>

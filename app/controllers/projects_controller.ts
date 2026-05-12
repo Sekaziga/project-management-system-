@@ -33,13 +33,13 @@ export default class ProjectsController {
   // GET /projects/:id
   public async show({ params, inertia }: HttpContext) {
     const project = await Project.findOrFail(params.id)
-    return inertia.render('Projects/Show', { project })
+    return inertia.render('Projects/Show', { project: project.serialize() })
   }
 
   // GET /projects/:id/edit
   public async edit({ params, inertia }: HttpContext) {
     const project = await Project.findOrFail(params.id)
-    return inertia.render('Projects/Edit', { project })
+    return inertia.render('Projects/Edit', { project: project.serialize() })
   }
 
   // PUT /projects/:id
