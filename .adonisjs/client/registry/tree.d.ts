@@ -12,4 +12,14 @@ export interface ApiDefinition {
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
+  projects: {
+    index: typeof routes['projects.index']
+    create: typeof routes['projects.create']
+    store: typeof routes['projects.store']
+    show: typeof routes['projects.show']
+    edit: typeof routes['projects.edit']
+    update: typeof routes['projects.update']
+    archive: typeof routes['projects.archive']
+    destroy: typeof routes['projects.destroy']
+  }
 }

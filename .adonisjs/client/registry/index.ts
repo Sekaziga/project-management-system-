@@ -42,6 +42,54 @@ const routes = {
     tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['session.destroy']['types'],
   },
+  'projects.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects',
+    tokens: [{"old":"/projects","type":0,"val":"projects","end":""}],
+    types: placeholder as Registry['projects.index']['types'],
+  },
+  'projects.create': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/create',
+    tokens: [{"old":"/projects/create","type":0,"val":"projects","end":""},{"old":"/projects/create","type":0,"val":"create","end":""}],
+    types: placeholder as Registry['projects.create']['types'],
+  },
+  'projects.store': {
+    methods: ["POST"],
+    pattern: '/projects',
+    tokens: [{"old":"/projects","type":0,"val":"projects","end":""}],
+    types: placeholder as Registry['projects.store']['types'],
+  },
+  'projects.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/:id',
+    tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.show']['types'],
+  },
+  'projects.edit': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/:id/edit',
+    tokens: [{"old":"/projects/:id/edit","type":0,"val":"projects","end":""},{"old":"/projects/:id/edit","type":1,"val":"id","end":""},{"old":"/projects/:id/edit","type":0,"val":"edit","end":""}],
+    types: placeholder as Registry['projects.edit']['types'],
+  },
+  'projects.update': {
+    methods: ["PUT"],
+    pattern: '/projects/:id',
+    tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.update']['types'],
+  },
+  'projects.archive': {
+    methods: ["PUT"],
+    pattern: '/projects/:id/archive',
+    tokens: [{"old":"/projects/:id/archive","type":0,"val":"projects","end":""},{"old":"/projects/:id/archive","type":1,"val":"id","end":""},{"old":"/projects/:id/archive","type":0,"val":"archive","end":""}],
+    types: placeholder as Registry['projects.archive']['types'],
+  },
+  'projects.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:id',
+    tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
