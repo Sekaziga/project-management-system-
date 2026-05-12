@@ -12,6 +12,16 @@ export default class ProjectsController {
     return inertia.render('Projects/Index', { projects })
   }
 
+  // GET /projects/archived
+  public async archived({ inertia, auth }: HttpContext) {
+    const projects = await Project.query()
+      .where('user_id', auth.user!.id)
+      .where('status', 'archived')
+      .orderBy('updated_at', 'desc')
+
+    return inertia.render('Projects/Archived', { projects })
+  }
+
   // GET /projects/create
   public async create({ inertia }: HttpContext) {
     return inertia.render('Projects/Create', {})
@@ -60,6 +70,15 @@ export default class ProjectsController {
     await project.save()
 
     return response.redirect('/projects')
+  }
+
+  // PUT /projects/:id/restore
+  public async restore({ params, response }: HttpContext) {
+    const project = await Project.findOrFail(params.id)
+    project.status = 'active'
+    await project.save()
+
+    return response.redirect('/projects/archived')
   }
 
   // DELETE /projects/:id

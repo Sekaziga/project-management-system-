@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useForm } from '@inertiajs/react'
+import { Link, useForm } from '@inertiajs/react'
 
 interface Project {
   id: number
@@ -30,64 +30,82 @@ export default function EditProject({ project }: { project: Project }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6 text-[var(--gray-12)]">Edit Project</h1>
+    <div className="px-4 py-6 md:px-8 md:py-10">
+      <div className="mx-auto w-full max-w-5xl space-y-6">
+        <header className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--gray-7)]">Projects</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gray-12)]">Edit Project</h1>
+          <p className="text-[var(--gray-7)] max-w-2xl">Update project details and status to keep your workspace current and organized.</p>
+        </header>
 
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-2xl dark:shadow-black/30 p-6 border border-[var(--gray-3)]">
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Project Name *
-          </label>
-          <input
-            type="text"
-            value={data.name}
-            onChange={(e) => setData('name', e.target.value)}
-            className="w-full border border-[var(--gray-4)] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--gray-1)] text-[var(--gray-10)]"
-            required
-          />
-          {errors.name && <p className="text-red-500 dark:text-red-400 text-sm mt-1">{errors.name}</p>}
-        </div>
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-[var(--gray-3)] bg-[var(--surface)] shadow-[0_18px_50px_color-mix(in_oklab,var(--gray-12)_12%,transparent)]">
+          <div className="grid grid-cols-1 gap-6 p-5 md:grid-cols-12 md:gap-8 md:p-8">
+            <section className="md:col-span-8 space-y-5">
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">Project Name *</label>
+                <input
+                  type="text"
+                  value={data.name}
+                  onChange={(e) => setData('name', e.target.value)}
+                  className="w-full rounded-xl border border-[var(--gray-4)] bg-[var(--gray-1)] px-4 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                  required
+                />
+                {errors.name && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.name}</p>}
+              </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Description
-          </label>
-          <textarea
-            value={data.description}
-            onChange={(e) => setData('description', e.target.value)}
-            className="w-full border border-[var(--gray-4)] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--gray-1)] text-[var(--gray-10)]"
-            rows={4}
-          />
-        </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">Description</label>
+                <textarea
+                  value={data.description}
+                  onChange={(e) => setData('description', e.target.value)}
+                  className="min-h-44 w-full rounded-xl border border-[var(--gray-4)] bg-[var(--gray-1)] px-4 py-3 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                  rows={7}
+                />
+              </div>
+            </section>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Status
-          </label>
-          <select
-            value={data.status}
-            onChange={(e) => setData('status', e.target.value)}
-            className="w-full border border-[var(--gray-4)] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--gray-1)] text-[var(--gray-10)]"
-          >
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
+            <aside className="md:col-span-4 space-y-4">
+              <div className="rounded-xl border border-[var(--gray-3)] bg-[var(--gray-2)] p-4">
+                <label className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">Status</label>
+                <select
+                  value={data.status}
+                  onChange={(e) => setData('status', e.target.value)}
+                  className="w-full rounded-xl border border-[var(--gray-4)] bg-[var(--gray-1)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                >
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
 
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={processing}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-500 disabled:opacity-50"
-          >
-            {processing ? 'Saving...' : 'Save Changes'}
-          </button>
-          <a href="/projects" className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
-            Cancel
-          </a>
-        </div>
-      </form>
+              <div className="rounded-xl border border-[var(--gray-3)] bg-[var(--gray-2)] p-4">
+                <h2 className="text-sm font-bold text-[var(--gray-12)]">Editing tips</h2>
+                <ul className="mt-3 space-y-2 text-sm text-[var(--gray-7)]">
+                  <li>- Keep names short and clear for easier search.</li>
+                  <li>- Use description for goals and owner context.</li>
+                  <li>- Archive only when work is truly complete.</li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+
+          <div className="flex flex-col-reverse gap-3 border-t border-[var(--gray-3)] p-4 md:flex-row md:items-center md:justify-end md:p-5">
+            <Link
+              href="/projects"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--gray-4)] px-5 py-2.5 font-semibold text-[var(--gray-8)] transition-colors hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)]"
+            >
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={processing}
+              className="inline-flex items-center justify-center rounded-xl bg-[var(--brand-9)] px-5 py-2.5 font-semibold text-white transition-colors hover:bg-[var(--brand-10)] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {processing ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

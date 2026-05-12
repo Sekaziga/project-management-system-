@@ -48,6 +48,12 @@ const routes = {
     tokens: [{"old":"/projects","type":0,"val":"projects","end":""}],
     types: placeholder as Registry['projects.index']['types'],
   },
+  'projects.archived': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/archived',
+    tokens: [{"old":"/projects/archived","type":0,"val":"projects","end":""},{"old":"/projects/archived","type":0,"val":"archived","end":""}],
+    types: placeholder as Registry['projects.archived']['types'],
+  },
   'projects.create': {
     methods: ["GET","HEAD"],
     pattern: '/projects/create',
@@ -83,6 +89,12 @@ const routes = {
     pattern: '/projects/:id/archive',
     tokens: [{"old":"/projects/:id/archive","type":0,"val":"projects","end":""},{"old":"/projects/:id/archive","type":1,"val":"id","end":""},{"old":"/projects/:id/archive","type":0,"val":"archive","end":""}],
     types: placeholder as Registry['projects.archive']['types'],
+  },
+  'projects.restore': {
+    methods: ["PUT"],
+    pattern: '/projects/:id/restore',
+    tokens: [{"old":"/projects/:id/restore","type":0,"val":"projects","end":""},{"old":"/projects/:id/restore","type":1,"val":"id","end":""},{"old":"/projects/:id/restore","type":0,"val":"restore","end":""}],
+    types: placeholder as Registry['projects.restore']['types'],
   },
   'projects.destroy': {
     methods: ["DELETE"],

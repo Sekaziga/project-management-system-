@@ -21,9 +21,9 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
 
   return (
-    <div className="flex h-screen bg-[var(--gray-2)]">
+    <div className="flex min-h-screen bg-[var(--gray-2)]">
       <Sidebar user={children.props.user ?? null} />
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto md:overflow-y-visible pt-12 md:pt-0">
         <main>{children}</main>
       </div>
       <Toaster

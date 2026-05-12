@@ -21,15 +21,27 @@ export default function ProjectsIndex({ projects }: { projects: Project[] }) {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[var(--gray-12)]">Projects</h1>
-        <Link
-          href="/projects/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500"
-        >
-          + New Project
-        </Link>
+    <div className="p-6 md:p-8">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-[var(--gray-12)]">Projects</h1>
+          <p className="mt-1 text-[var(--gray-7)]">Track active work and move finished items to archive.</p>
+        </div>
+
+        <div className="flex gap-2">
+          <Link
+            href="/projects/archived"
+            className="inline-flex items-center justify-center rounded-xl border border-[var(--gray-4)] px-4 py-2.5 text-sm font-semibold text-[var(--gray-8)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)]"
+          >
+            Archived
+          </Link>
+          <Link
+            href="/projects/create"
+            className="inline-flex items-center justify-center rounded-xl bg-[var(--brand-9)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-10)]"
+          >
+            + New Project
+          </Link>
+        </div>
       </div>
 
       {projects.length === 0 ? (

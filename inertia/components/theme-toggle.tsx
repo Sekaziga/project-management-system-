@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 
 export default function ThemeToggle({ collapsed }: { collapsed?: boolean }) {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  const [dark, setDark] = useState(() =>
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  )
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -20,7 +22,7 @@ export default function ThemeToggle({ collapsed }: { collapsed?: boolean }) {
   return (
     <button
       onClick={toggle}
-      className={`flex items-center gap-3 w-full rounded-lg transition-colors hover:bg-[var(--gray-3)] text-[var(--gray-8)] hover:text-[var(--gray-12)] dark:hover:text-[var(--gray-12)] ${collapsed ? 'justify-center p-2' : 'px-3 py-2'}`}
+      className={`flex items-center gap-3 w-full rounded-xl border border-transparent transition-all duration-200 hover:bg-[var(--gray-3)] hover:border-[var(--gray-4)] text-[var(--gray-8)] hover:text-[var(--gray-12)] ${collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'}`}
       title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {dark ? (

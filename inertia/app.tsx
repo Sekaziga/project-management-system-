@@ -10,6 +10,14 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
+if (typeof document !== 'undefined') {
+  const savedTheme = localStorage.getItem('theme')
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const useDark = savedTheme ? savedTheme === 'dark' : prefersDark
+
+  document.documentElement.classList.toggle('dark', useDark)
+}
+
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
   resolve: (name) => {

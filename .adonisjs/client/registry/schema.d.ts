@@ -91,6 +91,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['index']>>>
     }
   }
+  'projects.archived': {
+    methods: ["GET","HEAD"]
+    pattern: '/projects/archived'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['archived']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['archived']>>>
+    }
+  }
   'projects.create': {
     methods: ["GET","HEAD"]
     pattern: '/projects/create'
@@ -161,6 +173,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['archive']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['archive']>>>
+    }
+  }
+  'projects.restore': {
+    methods: ["PUT"]
+    pattern: '/projects/:id/restore'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['restore']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['restore']>>>
     }
   }
   'projects.destroy': {

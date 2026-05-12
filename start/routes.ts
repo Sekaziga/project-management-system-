@@ -31,12 +31,14 @@ router
 
     // Projects routes
     router.get('/projects', [ProjectsController, 'index'])
+    router.get('/projects/archived', [ProjectsController, 'archived'])
     router.get('/projects/create', [ProjectsController, 'create'])
     router.post('/projects', [ProjectsController, 'store'])
     router.get('/projects/:id', [ProjectsController, 'show'])
     router.get('/projects/:id/edit', [ProjectsController, 'edit'])
     router.put('/projects/:id', [ProjectsController, 'update'])
     router.put('/projects/:id/archive', [ProjectsController, 'archive'])
+    router.put('/projects/:id/restore', [ProjectsController, 'restore'])
     router.delete('/projects/:id', [ProjectsController, 'destroy'])
   })
   .use(middleware.auth())

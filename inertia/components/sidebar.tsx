@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
+import { usePage } from '@inertiajs/react'
 import ThemeToggle from './theme-toggle'
 
 interface User {
@@ -13,6 +14,7 @@ interface SidebarProps {
 const navItems = [
   { href: '/', label: 'Home', icon: 'home', always: true },
   { href: '/projects', label: 'Projects', icon: 'projects', auth: true },
+  { href: '/projects/archived', label: 'Archived', icon: 'archive', auth: true },
   { href: '/login', label: 'Login', icon: 'login', guest: true },
   { href: '/signup', label: 'Signup', icon: 'signup', guest: true },
 ]
@@ -20,16 +22,26 @@ const navItems = [
 export default function Sidebar({ user }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const currentPath = usePage().url.split('?')[0]
 
   function closeMobile() {
     setMobileOpen(false)
+  }
+
+  function isActive(href: string) {
+    if (href === '/') return currentPath === '/'
+
+    const hasMoreSpecificMatch = navItems.some((item) => item.href !== href && item.href === currentPath)
+    if (hasMoreSpecificMatch) return false
+
+    return currentPath === href || currentPath.startsWith(`${href}/`)
   }
 
   return (
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/55 backdrop-blur-[2px] z-40 md:hidden"
           onClick={closeMobile}
         />
       )}
@@ -38,18 +50,18 @@ export default function Sidebar({ user }: SidebarProps) {
         className={`
           fixed inset-y-0 left-0 z-50
           flex flex-col
-          bg-[var(--gray-1)] border-r border-[var(--gray-3)]
+          bg-[var(--surface)] border-r border-[var(--gray-3)]
           transition-all duration-200 ease-in-out
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
           md:translate-x-0 md:relative md:z-auto
           ${collapsed ? 'w-16' : 'w-64'}
         `}
       >
-        <div className={`flex items-center h-16 border-b border-[var(--gray-3)] ${collapsed ? 'justify-center' : 'px-6'}`}>
+        <div className={`flex items-center h-16 border-b border-[var(--gray-3)] ${collapsed ? 'justify-center' : 'px-5'}`}>
           {collapsed ? (
-            <span className="text-lg font-bold text-[var(--gray-12)]">P</span>
+            <span className="text-lg font-extrabold tracking-tight text-[var(--gray-12)]">PM</span>
           ) : (
-            <Link href="/" className="text-lg font-bold text-[var(--gray-12)]" onClick={closeMobile}>
+            <Link href="/" className="text-base font-extrabold tracking-tight text-[var(--gray-12)]" onClick={closeMobile}>
               Project Manager
             </Link>
           )}
@@ -65,10 +77,11 @@ export default function Sidebar({ user }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={closeMobile}
-                className={`flex items-center gap-3 rounded-lg transition-colors
-                  text-[var(--gray-8)] hover:text-[var(--gray-12)]
-                  hover:bg-[var(--gray-3)]
-                  ${collapsed ? 'justify-center p-2' : 'px-3 py-2'}
+                className={`flex items-center gap-3 rounded-xl border transition-all duration-200
+                  ${isActive(item.href)
+                    ? 'border-[color:var(--brand-9)]/25 bg-[color:var(--brand-9)]/15 text-[var(--gray-12)]'
+                    : 'border-transparent text-[var(--gray-8)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] hover:border-[var(--gray-4)]'}
+                  ${collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'}
                 `}
                 title={collapsed ? item.label : undefined}
               >
@@ -88,12 +101,18 @@ export default function Sidebar({ user }: SidebarProps) {
                     <line x1="20" y1="8" x2="20" y2="14" />
                     <line x1="23" y1="11" x2="17" y2="11" />
                   </svg>
+                ) : item.icon === 'archive' ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 shrink-0">
+                    <rect x="3" y="4" width="18" height="4" rx="1" />
+                    <path d="M5 8v11a2 2 0 002 2h10a2 2 0 002-2V8" />
+                    <path d="M10 12h4" />
+                  </svg>
                 ) : (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 shrink-0">
                     <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
                   </svg>
                 )}
-                {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
+                {!collapsed && <span className="text-sm font-semibold">{item.label}</span>}
               </Link>
             )
           })}
@@ -103,12 +122,12 @@ export default function Sidebar({ user }: SidebarProps) {
           <ThemeToggle collapsed={collapsed} />
 
           {user && !collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-8 h-8 rounded-full bg-[var(--gray-12)] text-[var(--gray-1)] flex items-center justify-center text-xs font-bold">
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--gray-2)] border border-[var(--gray-3)]">
+              <div className="w-8 h-8 rounded-full bg-[var(--gray-12)] text-[var(--gray-1)] flex items-center justify-center text-xs font-extrabold">
                 {user.initials}
               </div>
               <Form route="session.destroy" className="flex-1">
-                <button type="submit" className="text-sm text-[var(--gray-8)] hover:text-[var(--gray-12)] transition-colors">
+                <button type="submit" className="text-sm font-semibold text-[var(--gray-8)] hover:text-[var(--gray-12)] transition-colors text-left">
                   Logout
                 </button>
               </Form>
@@ -147,7 +166,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-3 left-3 z-30 md:hidden p-2 rounded-lg bg-[var(--gray-1)] border border-[var(--gray-3)] text-[var(--gray-8)]"
+        className="fixed top-3 left-3 z-30 md:hidden p-2.5 rounded-xl bg-[var(--surface)] border border-[var(--gray-3)] text-[var(--gray-8)] shadow-lg"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
           <line x1="3" y1="6" x2="21" y2="6" />

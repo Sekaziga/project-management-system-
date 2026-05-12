@@ -10,52 +10,76 @@ interface Project {
 }
 
 export default function ProjectShow({ project }: { project: Project }) {
+  const statusClasses = {
+    active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    completed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    archived: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+  }
+
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[var(--gray-12)]">{project.name}</h1>
-        <div className="flex gap-2">
-          <Link
-            href={`/projects/${project.id}/edit`}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500"
-          >
-            Edit
-          </Link>
-          <Link
-            href="/projects"
-            className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
-          >
-            Back to Projects
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-2xl dark:shadow-black/30 p-6 border border-[var(--gray-3)]">
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status</h3>
-          <span className={`text-xs px-2 py-1 rounded-full font-medium
-            ${project.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : ''}
-            ${project.status === 'completed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : ''}
-            ${project.status === 'archived' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' : ''}
-          `}>
-            {project.status}
-          </span>
-        </div>
-
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Description</h3>
-          <p className="text-gray-700 dark:text-gray-300">{project.description || 'No description provided.'}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <h3 className="text-gray-500 dark:text-gray-400">Created</h3>
-            <p className="text-gray-700 dark:text-gray-300">{new Date(project.createdAt).toLocaleDateString()}</p>
+    <div className="px-4 py-6 md:px-8 md:py-10">
+      <div className="mx-auto w-full max-w-7xl space-y-5">
+        <header className="flex flex-col gap-5 rounded-2xl border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_10px_28px_color-mix(in_oklab,var(--gray-12)_8%,transparent)] md:flex-row md:items-end md:justify-between md:p-6">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--gray-7)]">Projects</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gray-12)]">
+              {project.name}
+            </h1>
+            <p className="max-w-2xl text-[var(--gray-7)]">Project details, status, and timeline in one view.</p>
           </div>
-          <div>
-            <h3 className="text-gray-500 dark:text-gray-400">Updated</h3>
-            <p className="text-gray-700 dark:text-gray-300">{new Date(project.updatedAt).toLocaleDateString()}</p>
+
+          <div className="flex flex-wrap gap-2 md:justify-end">
+            <Link
+              href={`/projects/${project.id}/edit`}
+              className="inline-flex items-center justify-center rounded-xl bg-[var(--brand-9)] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--brand-10)]"
+            >
+              Edit
+            </Link>
+            <Link
+              href="/projects"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--gray-4)] px-4 py-2.5 text-sm font-semibold text-[var(--gray-8)] transition-colors hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)]"
+            >
+              Back to Projects
+            </Link>
           </div>
+        </header>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
+          <article className="rounded-2xl border border-[var(--gray-3)] bg-[var(--surface)] p-6 shadow-[0_18px_50px_color-mix(in_oklab,var(--gray-12)_12%,transparent)] md:col-span-8 md:p-7">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+              Description
+            </h2>
+            <p className="text-[1.02rem] leading-8 text-[var(--gray-10)]">
+              {project.description || 'No description provided.'}
+            </p>
+          </article>
+
+          <aside className="space-y-4 md:col-span-4">
+            <article className="rounded-2xl border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_10%,transparent)]">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Status</h2>
+              <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${statusClasses[project.status]}`}>
+                {project.status}
+              </span>
+            </article>
+
+            <article className="rounded-2xl border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_10%,transparent)]">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Timeline</h2>
+              <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="text-[var(--gray-7)]">Created</dt>
+                  <dd className="font-medium text-[var(--gray-12)]">
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[var(--gray-7)]">Updated</dt>
+                  <dd className="font-medium text-[var(--gray-12)]">
+                    {new Date(project.updatedAt).toLocaleDateString()}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </aside>
         </div>
       </div>
     </div>
