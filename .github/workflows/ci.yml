@@ -61,7 +61,7 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_DATABASE: project_management_test
-          SESSION_DRIVER: cookie
+          SESSION_DRIVER: memory
         run: npm test
 
       - name: Build app
