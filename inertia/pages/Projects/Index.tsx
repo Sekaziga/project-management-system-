@@ -1,15 +1,22 @@
 import { Link } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
+import type { FC } from 'react'
+import type { JSONDataTypes } from '@adonisjs/core/types/transformers'
 
 interface Project {
+  [key: string]: JSONDataTypes
   id: number
   name: string
-  description: string
+  description: string | null
   status: string
-  created_at: string
+  createdAt: string
 }
 
-export default function ProjectsIndex({ projects }: { projects: Project[] }) {
+interface ProjectsIndexProps {
+  projects: Project[]
+}
+
+const ProjectsIndex: FC<ProjectsIndexProps> = ({ projects }) => {
   function deleteProject(id: number) {
     if (confirm('Are you sure you want to delete this project?')) {
       router.delete(`/projects/${id}`)
@@ -97,3 +104,5 @@ export default function ProjectsIndex({ projects }: { projects: Project[] }) {
     </div>
   )
 }
+
+export default ProjectsIndex

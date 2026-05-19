@@ -1,15 +1,22 @@
 import { Link } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
+import type { FC } from 'react'
+import type { JSONDataTypes } from '@adonisjs/core/types/transformers'
 
 interface Project {
+  [key: string]: JSONDataTypes
   id: number
   name: string
-  description: string
+  description: string | null
   status: string
-  updatedAt?: string
+  updatedAt: string
 }
 
-export default function ArchivedProjects({ projects }: { projects: Project[] }) {
+interface ArchivedProjectsProps {
+  projects: Project[]
+}
+
+const ArchivedProjects: FC<ArchivedProjectsProps> = ({ projects }) => {
   function restoreProject(id: number) {
     router.put(`/projects/${id}/restore`)
   }
@@ -110,3 +117,5 @@ export default function ArchivedProjects({ projects }: { projects: Project[] }) 
     </div>
   )
 }
+
+export default ArchivedProjects

@@ -1,14 +1,22 @@
 import { useEffect } from 'react'
-import { Link, useForm } from '@inertiajs/react'
+import { Link } from '@adonisjs/inertia/react'
+import { useForm } from '@inertiajs/react'
+import type { FC } from 'react'
+import type { JSONDataTypes } from '@adonisjs/core/types/transformers'
 
 interface Project {
+  [key: string]: JSONDataTypes
   id: number
   name: string
-  description: string
+  description: string | null
   status: string
 }
 
-export default function EditProject({ project }: { project: Project }) {
+interface EditProjectProps {
+  project: Project
+}
+
+const EditProject: FC<EditProjectProps> = ({ project }) => {
   const { data, setData, put, processing, errors, setDefaults, reset } = useForm({
     name: project.name,
     description: project.description || '',
@@ -109,3 +117,5 @@ export default function EditProject({ project }: { project: Project }) {
     </div>
   )
 }
+
+export default EditProject
