@@ -1,6 +1,9 @@
 import { Link } from '@adonisjs/inertia/react'
+import type { FC } from 'react'
+import type { JSONDataTypes } from '@adonisjs/core/types/transformers'
 
 interface Project {
+  [key: string]: JSONDataTypes
   id: number
   name: string
   description: string | null
@@ -9,7 +12,11 @@ interface Project {
   updatedAt: string
 }
 
-export default function ProjectShow({ project }: { project: Project }) {
+interface ProjectShowProps {
+  project: Project
+}
+
+const ProjectShow: FC<ProjectShowProps> = ({ project }) => {
   const statusClasses = {
     active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     completed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -85,3 +92,5 @@ export default function ProjectShow({ project }: { project: Project }) {
     </div>
   )
 }
+
+export default ProjectShow

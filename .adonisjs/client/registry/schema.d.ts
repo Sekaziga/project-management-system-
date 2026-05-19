@@ -119,12 +119,12 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/projects'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/project').createProjectValidator)>>
       paramsTuple: []
       params: {}
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/project').createProjectValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'projects.show': {
@@ -155,12 +155,12 @@ export interface Registry {
     methods: ["PUT"]
     pattern: '/projects/:id'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/project').updateProjectValidator)>>
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/project').updateProjectValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'projects.archive': {

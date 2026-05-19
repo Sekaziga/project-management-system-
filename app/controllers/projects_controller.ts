@@ -1,7 +1,23 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Project from '#models/project'
+import { createProjectValidator, updateProjectValidator } from '#validators/project'
 
 export default class ProjectsController {
+  private async findUserProjectOrFail(projectId: number | string, userId: number) {
+    return Project.query().where('id', projectId).where('user_id', userId).firstOrFail()
+  }
+
+  private serializeProject(project: Project) {
+    return {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      status: project.status,
+      createdAt: project.createdAt.toISO() ?? '',
+      updatedAt: project.updatedAt.toISO() ?? '',
+    }
+  }
+
   // GET /projects
   public async index({ inertia, auth }: HttpContext) {
     const projects = await Project.query()
@@ -9,7 +25,9 @@ export default class ProjectsController {
       .where('status', '!=', 'archived')
       .orderBy('created_at', 'desc')
 
-    return inertia.render('Projects/Index', { projects })
+    return inertia.render('Projects/Index', {
+      projects: projects.map((project) => this.serializeProject(project)),
+    })
   }
 
   // GET /projects/archived
@@ -19,7 +37,9 @@ export default class ProjectsController {
       .where('status', 'archived')
       .orderBy('updated_at', 'desc')
 
-    return inertia.render('Projects/Archived', { projects })
+    return inertia.render('Projects/Archived', {
+      projects: projects.map((project) => this.serializeProject(project)),
+    })
   }
 
   // GET /projects/create
@@ -29,7 +49,7 @@ export default class ProjectsController {
 
   // POST /projects
   public async store({ request, response, auth }: HttpContext) {
-    const data = request.only(['name', 'description'])
+    const data = await request.validateUsing(createProjectValidator)
 
     await Project.create({
       ...data,
@@ -41,21 +61,21 @@ export default class ProjectsController {
   }
 
   // GET /projects/:id
-  public async show({ params, inertia }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
-    return inertia.render('Projects/Show', { project: project.serialize() })
+  public async show({ params, inertia, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
+    return inertia.render('Projects/Show', { project: this.serializeProject(project) })
   }
 
   // GET /projects/:id/edit
-  public async edit({ params, inertia }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
-    return inertia.render('Projects/Edit', { project: project.serialize() })
+  public async edit({ params, inertia, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
+    return inertia.render('Projects/Edit', { project: this.serializeProject(project) })
   }
 
   // PUT /projects/:id
-  public async update({ params, request, response }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
-    const data = request.only(['name', 'description', 'status'])
+  public async update({ params, request, response, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
+    const data = await request.validateUsing(updateProjectValidator)
 
     project.merge(data)
     await project.save()
@@ -64,8 +84,8 @@ export default class ProjectsController {
   }
 
   // PUT /projects/:id/archive
-  public async archive({ params, response }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
+  public async archive({ params, response, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
     project.status = 'archived'
     await project.save()
 
@@ -73,8 +93,8 @@ export default class ProjectsController {
   }
 
   // PUT /projects/:id/restore
-  public async restore({ params, response }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
+  public async restore({ params, response, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
     project.status = 'active'
     await project.save()
 
@@ -82,8 +102,8 @@ export default class ProjectsController {
   }
 
   // DELETE /projects/:id
-  public async destroy({ params, response }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
+  public async destroy({ params, response, auth }: HttpContext) {
+    const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
     await project.delete()
 
     return response.redirect('/projects')

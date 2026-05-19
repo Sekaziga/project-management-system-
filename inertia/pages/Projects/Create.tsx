@@ -1,4 +1,5 @@
-import { Link, useForm } from '@inertiajs/react'
+import { Link } from '@adonisjs/inertia/react'
+import { useForm } from '@inertiajs/react'
 
 export default function CreateProject() {
   const { data, setData, post, processing, errors } = useForm({
