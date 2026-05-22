@@ -1,6 +1,27 @@
 # Development Roadmap
 
+## Current Status Snapshot
+
+Assessed from the repository state on `2026-05-22`.
+
+- M1: `Core security/backend complete, UI portion still in progress`
+- M2: `Not started`
+- M3: `Not started`
+- M4: `Not started`
+- M5: `Not started`
+- M6: `Not started`
+- M7: `Not started`
+- M8: `Not started`
+
+Notes:
+
+- The secure core work is in place: project validation, ownership enforcement, route/redirect cleanup, unauthorized handling, and core auth/project tests.
+- The remaining work before the roadmap's full `M1` can be considered complete lives mostly in the UI polish area, which also overlaps with Phase 2 in `Docs/DEVELOPMENT_PHASES.md`.
+- Static type checking passes. Runtime PostgreSQL verification should still be run locally with Node `>=24`, matching `package.json`.
+
 ## M1: Secure Core Foundation
+
+Status: `Core security/backend complete, UI portion still in progress`
 
 Value delivered: A safe, usable single-user project management app.
 
@@ -230,4 +251,4 @@ Technical debt checkpoint:
 7. M7: Notifications
 8. M8: Public API
 
-The most important next step is `M1`, especially project ownership enforcement and server-side validation. Without that, every later feature inherits avoidable security risk.
+The most important next step is to finish the remaining `M1` UI/productization work and then move into `M2`.

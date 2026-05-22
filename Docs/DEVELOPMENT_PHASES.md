@@ -4,7 +4,7 @@
 
 Assessed from the repository state on `2026-05-22`.
 
-- Phase 1: `Mostly complete`
+- Phase 1: `Complete`
 - Phase 2: `Current phase / in progress`
 - Phase 3: `Not started`
 - Phase 4: `Not started`
@@ -16,12 +16,13 @@ Assessed from the repository state on `2026-05-22`.
 
 Notes:
 
-- Phase 1 appears largely implemented: project validation, ownership enforcement, and cross-user access tests exist in the codebase.
+- Phase 1 is implemented in the codebase: project validation, ownership enforcement, cross-user access tests, named route consistency, and unauthorized error handling are in place.
 - Phase 2 is the best match for the current working phase because the app still uses the default starter home page, so the UI productization pass is not complete yet.
+- Verification note: static type checking passes. Runtime PostgreSQL verification should be run locally with Node `>=24`, which matches `package.json`.
 
 ## Phase 1: Stabilize Current Core
 
-Status: `Mostly complete`
+Status: `Complete`
 
 Goal: Make the existing project module secure, validated, and production-ready.
 

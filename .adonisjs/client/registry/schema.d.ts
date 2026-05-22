@@ -19,7 +19,7 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'new_account.create': {
+  'signup.create': {
     methods: ["GET","HEAD"]
     pattern: '/signup'
     types: {
@@ -31,7 +31,7 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['create']>>>
     }
   }
-  'new_account.store': {
+  'signup.store': {
     methods: ["POST"]
     pattern: '/signup'
     types: {

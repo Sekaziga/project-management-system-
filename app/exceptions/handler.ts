@@ -21,6 +21,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
+    '403': (_, { inertia }) => inertia.render('errors/forbidden', {}),
     '404': (_, { inertia }) => inertia.render('errors/not_found', {}),
     '500..599': (_, { inertia }) => inertia.render('errors/server_error', {}),
   }
@@ -30,6 +31,16 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'E_UNAUTHORIZED_ACCESS' &&
+      ctx.auth.isAuthenticated
+    ) {
+      return ctx.response.status(403).send(await ctx.inertia.render('errors/forbidden', {}))
+    }
+
     return super.handle(error, ctx)
   }
 
