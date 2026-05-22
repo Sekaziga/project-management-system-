@@ -10,7 +10,7 @@ export default function Signup() {
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-2xl dark:shadow-black/30 p-8 border border-[var(--gray-3)]">
-          <Form route="new_account.store" className="space-y-6">
+          <Form route="signup.store" className="space-y-6">
             {({ errors }) => (
               <>
                 <div>

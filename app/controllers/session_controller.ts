@@ -11,7 +11,7 @@ export default class SessionController {
     const user = await User.verifyCredentials(email, password)
 
     await auth.use('web').login(user)
-    response.redirect().toPath('/projects')
+    response.redirect().toRoute('projects.index')
   }
 
   async destroy({ auth, response }: HttpContext) {

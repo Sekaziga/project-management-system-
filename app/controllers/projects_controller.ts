@@ -57,7 +57,7 @@ export default class ProjectsController {
       status: 'active',
     })
 
-    return response.redirect('/projects')
+    return response.redirect().toRoute('projects.index')
   }
 
   // GET /projects/:id
@@ -80,7 +80,7 @@ export default class ProjectsController {
     project.merge(data)
     await project.save()
 
-    return response.redirect('/projects')
+    return response.redirect().toRoute('projects.index')
   }
 
   // PUT /projects/:id/archive
@@ -89,7 +89,7 @@ export default class ProjectsController {
     project.status = 'archived'
     await project.save()
 
-    return response.redirect('/projects')
+    return response.redirect().toRoute('projects.index')
   }
 
   // PUT /projects/:id/restore
@@ -98,7 +98,7 @@ export default class ProjectsController {
     project.status = 'active'
     await project.save()
 
-    return response.redirect('/projects/archived')
+    return response.redirect().toRoute('projects.archived')
   }
 
   // DELETE /projects/:id
@@ -106,6 +106,6 @@ export default class ProjectsController {
     const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
     await project.delete()
 
-    return response.redirect('/projects')
+    return response.redirect().toRoute('projects.index')
   }
 }

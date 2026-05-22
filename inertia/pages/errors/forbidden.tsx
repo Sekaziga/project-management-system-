@@ -1,0 +1,7 @@
+export default function Forbidden() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <h1 className="text-2xl font-bold text-[var(--gray-12)]">Access denied</h1>
+    </div>
+  )
+}

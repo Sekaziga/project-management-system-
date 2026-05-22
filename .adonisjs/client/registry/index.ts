@@ -12,17 +12,17 @@ const routes = {
     tokens: [{"old":"/","type":0,"val":"/","end":""}],
     types: placeholder as Registry['home']['types'],
   },
-  'new_account.create': {
+  'signup.create': {
     methods: ["GET","HEAD"],
     pattern: '/signup',
     tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.create']['types'],
+    types: placeholder as Registry['signup.create']['types'],
   },
-  'new_account.store': {
+  'signup.store': {
     methods: ["POST"],
     pattern: '/signup',
     tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.store']['types'],
+    types: placeholder as Registry['signup.store']['types'],
   },
   'session.create': {
     methods: ["GET","HEAD"],

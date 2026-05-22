@@ -1,6 +1,28 @@
 # Development Phases
 
+## Current Status Snapshot
+
+Assessed from the repository state on `2026-05-22`.
+
+- Phase 1: `Complete`
+- Phase 2: `Current phase / in progress`
+- Phase 3: `Not started`
+- Phase 4: `Not started`
+- Phase 5: `Not started`
+- Phase 6: `Not started`
+- Phase 7: `Not started`
+- Phase 8: `Not started`
+- Phase 9: `Not started`
+
+Notes:
+
+- Phase 1 is implemented in the codebase: project validation, ownership enforcement, cross-user access tests, named route consistency, and unauthorized error handling are in place.
+- Phase 2 is the best match for the current working phase because the app still uses the default starter home page, so the UI productization pass is not complete yet.
+- Verification note: static type checking passes. Runtime PostgreSQL verification should be run locally with Node `>=24`, which matches `package.json`.
+
 ## Phase 1: Stabilize Current Core
+
+Status: `Complete`
 
 Goal: Make the existing project module secure, validated, and production-ready.
 
@@ -29,6 +51,8 @@ Dependencies:
 Complexity: `Medium`
 
 ## Phase 2: Productize the Existing UI
+
+Status: `Current phase / in progress`
 
 Goal: Turn the starter-like app into a polished project management interface.
 
@@ -59,6 +83,8 @@ Dependencies:
 Complexity: `Medium`
 
 ## Phase 3: Tasks / To-Dos
+
+Status: `Not started`
 
 Goal: Add task management inside projects.
 
@@ -91,6 +117,8 @@ Complexity: `Medium`
 
 ## Phase 4: Dashboard and Reporting
 
+Status: `Not started`
+
 Goal: Give users visibility across their work.
 
 Features and tasks:
@@ -118,6 +146,8 @@ Dependencies:
 Complexity: `Medium`
 
 ## Phase 5: Team Members and Collaborators
+
+Status: `Not started`
 
 Goal: Support shared projects.
 
@@ -150,6 +180,8 @@ Complexity: `High`
 
 ## Phase 6: Comments and Activity Logs
 
+Status: `Not started`
+
 Goal: Add collaboration history and discussion.
 
 Features and tasks:
@@ -176,6 +208,8 @@ Dependencies:
 Complexity: `Medium`
 
 ## Phase 7: File Attachments
+
+Status: `Not started`
 
 Goal: Allow users to attach files to projects/tasks.
 
@@ -206,6 +240,8 @@ Complexity: `High`
 
 ## Phase 8: Notifications
 
+Status: `Not started`
+
 Goal: Notify users about relevant project activity.
 
 Features and tasks:
@@ -233,6 +269,8 @@ Dependencies:
 Complexity: `Medium`
 
 ## Phase 9: Public API
+
+Status: `Not started`
 
 Goal: Expose stable external endpoints.
 
