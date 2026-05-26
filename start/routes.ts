@@ -10,10 +10,44 @@
 import { middleware } from '#start/kernel'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
+import Project from '#models/project'
 
 const ProjectsController = () => import('#controllers/projects_controller')
+const TasksController = () => import('#controllers/tasks_controller')
 
-router.on('/').renderInertia('home', {}).as('home')
+router
+  .get('/', async ({ inertia, auth }) => {
+    const isAuthenticated = await auth.check()
+
+    if (!isAuthenticated) {
+      return inertia.render('home', {})
+    }
+
+    const projects = await Project.query().where('user_id', auth.user!.id)
+    const activeProjects = projects.filter((project) => project.status === 'active')
+    const completedProjects = projects.filter((project) => project.status === 'completed')
+    const archivedProjects = projects.filter((project) => project.status === 'archived')
+    const recentProjects = [...projects]
+      .sort((left, right) => right.updatedAt.toMillis() - left.updatedAt.toMillis())
+      .slice(0, 3)
+      .map((project) => ({
+        id: project.id,
+        name: project.name,
+        status: project.status,
+        updatedAt: project.updatedAt.toISO() ?? '',
+      }))
+
+    return inertia.render('home', {
+      workspace: {
+        totalProjects: projects.length,
+        activeProjects: activeProjects.length,
+        completedProjects: completedProjects.length,
+        archivedProjects: archivedProjects.length,
+        recentProjects,
+      },
+    })
+  })
+  .as('home')
 
 router
   .group(() => {
@@ -40,5 +74,11 @@ router
     router.put('/projects/:id/archive', [ProjectsController, 'archive']).as('projects.archive')
     router.put('/projects/:id/restore', [ProjectsController, 'restore']).as('projects.restore')
     router.delete('/projects/:id', [ProjectsController, 'destroy']).as('projects.destroy')
+
+    router.post('/projects/:projectId/tasks', [TasksController, 'store']).as('tasks.store')
+    router.put('/projects/:projectId/tasks/:id', [TasksController, 'update']).as('tasks.update')
+    router
+      .delete('/projects/:projectId/tasks/:id', [TasksController, 'destroy'])
+      .as('tasks.destroy')
   })
   .use(middleware.auth())

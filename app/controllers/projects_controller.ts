@@ -1,8 +1,14 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Project from '#models/project'
 import { createProjectValidator, updateProjectValidator } from '#validators/project'
+import type Task from '#models/task'
+import { taskStatuses } from '#validators/task'
 
 export default class ProjectsController {
+  private isTaskStatus(value: string): value is (typeof taskStatuses)[number] {
+    return taskStatuses.includes(value as (typeof taskStatuses)[number])
+  }
+
   private async findUserProjectOrFail(projectId: number | string, userId: number) {
     return Project.query().where('id', projectId).where('user_id', userId).firstOrFail()
   }
@@ -15,6 +21,19 @@ export default class ProjectsController {
       status: project.status,
       createdAt: project.createdAt.toISO() ?? '',
       updatedAt: project.updatedAt.toISO() ?? '',
+    }
+  }
+
+  private serializeTask(task: Task) {
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+      dueDate: task.dueDate?.toISODate() ?? null,
+      createdAt: task.createdAt.toISO() ?? '',
+      updatedAt: task.updatedAt.toISO() ?? '',
     }
   }
 
@@ -61,9 +80,28 @@ export default class ProjectsController {
   }
 
   // GET /projects/:id
-  public async show({ params, inertia, auth }: HttpContext) {
+  public async show({ params, inertia, auth, request }: HttpContext) {
     const project = await this.findUserProjectOrFail(params.id, auth.user!.id)
-    return inertia.render('Projects/Show', { project: this.serializeProject(project) })
+    const taskStatusFilter = request.input('status')
+    const selectedTaskStatus =
+      typeof taskStatusFilter === 'string' && this.isTaskStatus(taskStatusFilter)
+        ? taskStatusFilter
+        : 'all'
+
+    await project.load('tasks', (tasksQuery) => {
+      if (selectedTaskStatus !== 'all') {
+        tasksQuery.where('status', selectedTaskStatus)
+      }
+
+      tasksQuery.orderBy('due_date', 'asc').orderBy('created_at', 'desc')
+    })
+
+    return inertia.render('Projects/Show', {
+      project: this.serializeProject(project),
+      tasks: project.tasks.map((task) => this.serializeTask(task)),
+      taskStatusFilter: selectedTaskStatus,
+      taskStatusOptions: ['all', ...taskStatuses],
+    })
   }
 
   // GET /projects/:id/edit

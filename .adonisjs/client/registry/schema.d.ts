@@ -199,4 +199,40 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['destroy']>>>
     }
   }
+  'tasks.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/tasks'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/task').createTaskValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/task').createTaskValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tasks.update': {
+    methods: ["PUT"]
+    pattern: '/projects/:projectId/tasks/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/task').updateTaskValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/task').updateTaskValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tasks.destroy': {
+    methods: ["DELETE"]
+    pattern: '/projects/:projectId/tasks/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['destroy']>>>
+    }
+  }
 }

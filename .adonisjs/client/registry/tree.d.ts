@@ -24,4 +24,9 @@ export interface ApiDefinition {
     restore: typeof routes['projects.restore']
     destroy: typeof routes['projects.destroy']
   }
+  tasks: {
+    store: typeof routes['tasks.store']
+    update: typeof routes['tasks.update']
+    destroy: typeof routes['tasks.destroy']
+  }
 }

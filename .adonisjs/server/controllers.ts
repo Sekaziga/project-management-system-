@@ -7,4 +7,5 @@ export const controllers = {
   NewAccount: () => import('#controllers/new_account_controller'),
   Projects: () => import('#controllers/projects_controller'),
   Session: () => import('#controllers/session_controller'),
+  Tasks: () => import('#controllers/tasks_controller'),
 }

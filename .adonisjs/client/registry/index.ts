@@ -102,6 +102,24 @@ const routes = {
     tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['projects.destroy']['types'],
   },
+  'tasks.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/tasks',
+    tokens: [{"old":"/projects/:projectId/tasks","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks","type":0,"val":"tasks","end":""}],
+    types: placeholder as Registry['tasks.store']['types'],
+  },
+  'tasks.update': {
+    methods: ["PUT"],
+    pattern: '/projects/:projectId/tasks/:id',
+    tokens: [{"old":"/projects/:projectId/tasks/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks/:id","type":0,"val":"tasks","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['tasks.update']['types'],
+  },
+  'tasks.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:projectId/tasks/:id',
+    tokens: [{"old":"/projects/:projectId/tasks/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks/:id","type":0,"val":"tasks","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['tasks.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
