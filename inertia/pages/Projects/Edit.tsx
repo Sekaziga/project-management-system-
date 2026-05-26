@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { useForm } from '@inertiajs/react'
 import type { FC } from 'react'
@@ -18,20 +17,11 @@ interface EditProjectProps {
 }
 
 const EditProject: FC<EditProjectProps> = ({ project }) => {
-  const { data, setData, put, processing, errors, setDefaults, reset } = useForm({
+  const { data, setData, put, processing, errors } = useForm({
     name: project.name,
     description: project.description || '',
     status: project.status,
   })
-
-  useEffect(() => {
-    setDefaults({
-      name: project.name,
-      description: project.description || '',
-      status: project.status,
-    })
-    reset()
-  }, [project.id, project.name, project.description, project.status, reset, setDefaults])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

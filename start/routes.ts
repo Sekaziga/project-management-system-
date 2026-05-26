@@ -13,6 +13,7 @@ import router from '@adonisjs/core/services/router'
 import Project from '#models/project'
 
 const ProjectsController = () => import('#controllers/projects_controller')
+const TasksController = () => import('#controllers/tasks_controller')
 
 router
   .get('/', async ({ inertia, auth }) => {
@@ -73,5 +74,11 @@ router
     router.put('/projects/:id/archive', [ProjectsController, 'archive']).as('projects.archive')
     router.put('/projects/:id/restore', [ProjectsController, 'restore']).as('projects.restore')
     router.delete('/projects/:id', [ProjectsController, 'destroy']).as('projects.destroy')
+
+    router.post('/projects/:projectId/tasks', [TasksController, 'store']).as('tasks.store')
+    router.put('/projects/:projectId/tasks/:id', [TasksController, 'update']).as('tasks.update')
+    router
+      .delete('/projects/:projectId/tasks/:id', [TasksController, 'destroy'])
+      .as('tasks.destroy')
   })
   .use(middleware.auth())
