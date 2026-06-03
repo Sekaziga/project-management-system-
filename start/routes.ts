@@ -10,42 +10,20 @@
 import { middleware } from '#start/kernel'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
-import Project from '#models/project'
 
+const DashboardController = () => import('#controllers/dashboard_controller')
 const ProjectsController = () => import('#controllers/projects_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 
 router
-  .get('/', async ({ inertia, auth }) => {
+  .get('/', async ({ inertia, auth, response }) => {
     const isAuthenticated = await auth.check()
 
     if (!isAuthenticated) {
       return inertia.render('home', {})
     }
 
-    const projects = await Project.query().where('user_id', auth.user!.id)
-    const activeProjects = projects.filter((project) => project.status === 'active')
-    const completedProjects = projects.filter((project) => project.status === 'completed')
-    const archivedProjects = projects.filter((project) => project.status === 'archived')
-    const recentProjects = [...projects]
-      .sort((left, right) => right.updatedAt.toMillis() - left.updatedAt.toMillis())
-      .slice(0, 3)
-      .map((project) => ({
-        id: project.id,
-        name: project.name,
-        status: project.status,
-        updatedAt: project.updatedAt.toISO() ?? '',
-      }))
-
-    return inertia.render('home', {
-      workspace: {
-        totalProjects: projects.length,
-        activeProjects: activeProjects.length,
-        completedProjects: completedProjects.length,
-        archivedProjects: archivedProjects.length,
-        recentProjects,
-      },
-    })
+    return response.redirect().toRoute('dashboard')
   })
   .as('home')
 
@@ -62,6 +40,8 @@ router
 router
   .group(() => {
     router.post('logout', [controllers.Session, 'destroy']).as('session.destroy')
+
+    router.get('/dashboard', [DashboardController, 'index']).as('dashboard')
 
     // Projects routes
     router.get('/projects', [ProjectsController, 'index']).as('projects.index')

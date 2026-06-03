@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: '/', label: 'Workspace', icon: 'home', always: true },
+  { href: '/dashboard', label: 'Dashboard', icon: 'home', auth: true },
   { href: '/projects', label: 'Projects', icon: 'projects', auth: true },
   { href: '/projects/archived', label: 'Archived', icon: 'archive', auth: true },
   { href: '/login', label: 'Login', icon: 'login', guest: true },
@@ -33,8 +33,6 @@ export default function Sidebar({ user }: SidebarProps) {
   }
 
   function isActive(href: string) {
-    if (href === '/') return currentPath === '/'
-
     const hasMoreSpecificMatch = navItems.some((item) => item.href !== href && item.href === currentPath)
     if (hasMoreSpecificMatch) return false
 
