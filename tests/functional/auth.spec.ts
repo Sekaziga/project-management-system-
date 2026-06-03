@@ -7,7 +7,7 @@ test.group('Authentication', (group) => {
     return testUtils.db().truncate()
   })
 
-  test('signs up a user and redirects to projects', async ({ client, assert }) => {
+  test('signs up a user and redirects to dashboard', async ({ client, assert }) => {
     const response = await client
       .post('/signup')
       .form({
@@ -19,13 +19,13 @@ test.group('Authentication', (group) => {
       .redirects(0)
 
     response.assertStatus(302)
-    assert.equal(response.header('location'), '/projects')
+    assert.equal(response.header('location'), '/dashboard')
 
     const user = await User.findBy('email', 'new-user@example.com')
     assert.isNotNull(user)
   })
 
-  test('logs in a user and redirects to projects', async ({ client, assert }) => {
+  test('logs in a user and redirects to dashboard', async ({ client, assert }) => {
     const user = await User.create({
       fullName: 'Existing User',
       email: 'existing-user@example.com',
@@ -41,6 +41,6 @@ test.group('Authentication', (group) => {
       .redirects(0)
 
     response.assertStatus(302)
-    assert.equal(response.header('location'), '/projects')
+    assert.equal(response.header('location'), '/dashboard')
   })
 })
