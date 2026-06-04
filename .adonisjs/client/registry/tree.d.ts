@@ -24,6 +24,11 @@ export interface ApiDefinition {
     archive: typeof routes['projects.archive']
     restore: typeof routes['projects.restore']
     destroy: typeof routes['projects.destroy']
+    members: {
+      store: typeof routes['projects.members.store']
+      update: typeof routes['projects.members.update']
+      destroy: typeof routes['projects.members.destroy']
+    }
   }
   tasks: {
     store: typeof routes['tasks.store']

@@ -3,6 +3,7 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import User from '#models/user'
 import Project from '#models/project'
 import Task from '#models/task'
+import ProjectMember from '#models/project_member'
 
 test.group('Tasks', (group) => {
   group.each.setup(() => {
@@ -212,5 +213,61 @@ test.group('Tasks', (group) => {
 
     const existingTask = await Task.find(task.id)
     assert.isNotNull(existingTask)
+  })
+
+  test('allows member collaborators to manage tasks', async ({ client, assert }) => {
+    const owner = await createUser('owner@example.com')
+    const collaborator = await createUser('member@example.com')
+    const project = await createProjectFor(owner)
+
+    await ProjectMember.create({
+      projectId: project.id,
+      userId: collaborator.id,
+      role: 'member',
+    })
+
+    const response = await client
+      .post(`/projects/${project.id}/tasks`)
+      .loginAs(collaborator)
+      .form({
+        title: 'Collaborator task',
+        description: 'Created by a shared member',
+        status: 'todo',
+        priority: 'low',
+      })
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    const task = await Task.findBy('title', 'Collaborator task')
+    assert.isNotNull(task)
+    assert.equal(task!.projectId, project.id)
+  })
+
+  test('prevents viewer collaborators from mutating tasks', async ({ client, assert }) => {
+    const owner = await createUser('owner@example.com')
+    const viewer = await createUser('viewer@example.com')
+    const project = await createProjectFor(owner)
+
+    await ProjectMember.create({
+      projectId: project.id,
+      userId: viewer.id,
+      role: 'viewer',
+    })
+
+    const response = await client
+      .post(`/projects/${project.id}/tasks`)
+      .loginAs(viewer)
+      .form({
+        title: 'Unauthorized task',
+        description: 'Should not be created',
+        status: 'todo',
+      })
+      .redirects(0)
+
+    response.assertStatus(404)
+
+    const count = await Task.query().count('* as total').firstOrFail()
+    assert.equal(Number(count.$extras.total), 0)
   })
 })

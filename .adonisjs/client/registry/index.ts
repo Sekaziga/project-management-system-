@@ -108,6 +108,24 @@ const routes = {
     tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['projects.destroy']['types'],
   },
+  'projects.members.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/members',
+    tokens: [{"old":"/projects/:projectId/members","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members","type":0,"val":"members","end":""}],
+    types: placeholder as Registry['projects.members.store']['types'],
+  },
+  'projects.members.update': {
+    methods: ["PUT"],
+    pattern: '/projects/:projectId/members/:id',
+    tokens: [{"old":"/projects/:projectId/members/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members/:id","type":0,"val":"members","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.members.update']['types'],
+  },
+  'projects.members.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:projectId/members/:id',
+    tokens: [{"old":"/projects/:projectId/members/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members/:id","type":0,"val":"members","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.members.destroy']['types'],
+  },
   'tasks.store': {
     methods: ["POST"],
     pattern: '/projects/:projectId/tasks',

@@ -211,6 +211,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['destroy']>>>
     }
   }
+  'projects.members.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/members'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/project_member').inviteProjectMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/project_member').inviteProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.members.update': {
+    methods: ["PUT"]
+    pattern: '/projects/:projectId/members/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/project_member').updateProjectMemberValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/project_member').updateProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.members.destroy': {
+    methods: ["DELETE"]
+    pattern: '/projects/:projectId/members/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['destroy']>>>
+    }
+  }
   'tasks.store': {
     methods: ["POST"]
     pattern: '/projects/:projectId/tasks'
