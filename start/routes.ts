@@ -13,6 +13,7 @@ import router from '@adonisjs/core/services/router'
 
 const DashboardController = () => import('#controllers/dashboard_controller')
 const ProjectsController = () => import('#controllers/projects_controller')
+const CommentsController = () => import('#controllers/comments_controller')
 const ProjectMembersController = () => import('#controllers/project_members_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 
@@ -55,7 +56,9 @@ router
     router.put('/projects/:id/archive', [ProjectsController, 'archive']).as('projects.archive')
     router.put('/projects/:id/restore', [ProjectsController, 'restore']).as('projects.restore')
     router.delete('/projects/:id', [ProjectsController, 'destroy']).as('projects.destroy')
-    router.post('/projects/:projectId/members', [ProjectMembersController, 'store']).as('projects.members.store')
+    router
+      .post('/projects/:projectId/members', [ProjectMembersController, 'store'])
+      .as('projects.members.store')
     router
       .put('/projects/:projectId/members/:id', [ProjectMembersController, 'update'])
       .as('projects.members.update')
@@ -68,5 +71,7 @@ router
     router
       .delete('/projects/:projectId/tasks/:id', [TasksController, 'destroy'])
       .as('tasks.destroy')
+
+    router.post('/projects/:projectId/comments', [CommentsController, 'store']).as('comments.store')
   })
   .use(middleware.auth())

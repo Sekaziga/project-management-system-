@@ -41,12 +41,15 @@ interface ProjectOwner {
 interface ProjectShowProps {
   project: Project
   tasks: Task[]
+  comments: CommentItem[]
+  activityLogs: ActivityLogItem[]
   members: ProjectMember[]
   owner: ProjectOwner
   currentUserRole: 'owner' | MemberRole | null
   canManageMembers: boolean
   canManageTasks: boolean
   canManageProject: boolean
+  canComment: boolean
   taskStatusFilter: TaskFilter
   taskStatusOptions: TaskFilter[]
 }
@@ -65,6 +68,27 @@ interface Task {
   dueDate: string | null
   createdAt: string
   updatedAt: string
+}
+
+interface CommentItem {
+  id: number
+  projectId: number
+  taskId: number | null
+  body: string
+  createdAt: string
+  user: ProjectOwner
+}
+
+interface ActivityLogItem {
+  id: number
+  projectId: number
+  taskId: number | null
+  commentId: number | null
+  action: string
+  message: string
+  metadata: Record<string, JSONDataTypes> | null
+  createdAt: string
+  user: ProjectOwner
 }
 
 type ProjectDialogAction = 'archive' | 'restore' | 'delete' | null
@@ -99,20 +123,29 @@ const memberRoleLabels: Record<MemberRole, string> = {
 }
 
 const memberRoleClasses: Record<MemberRole, string> = {
-  admin: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-300',
-  member: 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/60 dark:bg-sky-900/20 dark:text-sky-300',
+  admin:
+    'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-300',
+  member:
+    'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/60 dark:bg-sky-900/20 dark:text-sky-300',
   viewer: 'border-[var(--gray-4)] bg-[var(--gray-2)] text-[var(--gray-8)]',
+}
+
+function formatDateTime(value: string) {
+  return new Date(value).toLocaleString()
 }
 
 const ProjectShow: FC<ProjectShowProps> = ({
   project,
   tasks,
+  comments,
+  activityLogs,
   members,
   owner,
   currentUserRole,
   canManageMembers,
   canManageTasks,
   canManageProject,
+  canComment,
   taskStatusFilter,
   taskStatusOptions,
 }) => {
@@ -141,6 +174,10 @@ const ProjectShow: FC<ProjectShowProps> = ({
   const memberForm = useForm({
     email: '',
     role: 'member' as MemberRole,
+  })
+
+  const commentForm = useForm({
+    body: '',
   })
 
   const adminCount = 1 + members.filter((member) => member.role === 'admin').length
@@ -247,6 +284,15 @@ const ProjectShow: FC<ProjectShowProps> = ({
     })
   }
 
+  function addComment(e: React.FormEvent) {
+    e.preventDefault()
+
+    commentForm.post(`/projects/${project.id}/comments`, {
+      preserveScroll: true,
+      onSuccess: () => commentForm.reset(),
+    })
+  }
+
   function updateTaskStatus(task: Task, status: TaskStatus) {
     router.put(
       `/projects/${project.id}/tasks/${task.id}`,
@@ -278,13 +324,18 @@ const ProjectShow: FC<ProjectShowProps> = ({
         <header className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] px-5 py-6 shadow-[0_18px_50px_color-mix(in_oklab,var(--gray-12)_10%,transparent)] md:px-7">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Projects</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                Projects
+              </p>
               <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center">
-                <h1 className="truncate text-3xl font-extrabold text-[var(--gray-12)] md:text-4xl">{project.name}</h1>
+                <h1 className="truncate text-3xl font-extrabold text-[var(--gray-12)] md:text-4xl">
+                  {project.name}
+                </h1>
                 <StatusBadge status={project.status} />
               </div>
               <p className="mt-3 max-w-3xl text-[var(--gray-7)]">
-                Review project context, track current status, and make the next project-level decision without leaving the page.
+                Review project context, track current status, and make the next project-level
+                decision without leaving the page.
               </p>
             </div>
 
@@ -336,7 +387,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(300px,360px)]">
           <div className="space-y-4">
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-6 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Description</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                Description
+              </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--gray-8)] md:text-[0.98rem]">
                 {project.description ||
                   'No description has been added yet. Use the edit flow to capture project goals, scope, and context.'}
@@ -347,7 +400,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
               <div className="border-b border-[var(--gray-3)] px-6 py-5">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Tasks</h2>
+                    <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                      Tasks
+                    </h2>
                     <p className="mt-2 text-sm text-[var(--gray-7)]">
                       {openTaskCount} open of {tasks.length} shown in this view.
                     </p>
@@ -359,7 +414,11 @@ const ProjectShow: FC<ProjectShowProps> = ({
                       return (
                         <Link
                           key={option}
-                          href={option === 'all' ? `/projects/${project.id}` : `/projects/${project.id}?status=${option}`}
+                          href={
+                            option === 'all'
+                              ? `/projects/${project.id}`
+                              : `/projects/${project.id}?status=${option}`
+                          }
                           preserveScroll
                           className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                             active
@@ -443,7 +502,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
                                   </label>
                                   <select
                                     value={editForm.data.status}
-                                    onChange={(e) => editForm.setData('status', e.target.value as TaskStatus)}
+                                    onChange={(e) =>
+                                      editForm.setData('status', e.target.value as TaskStatus)
+                                    }
                                     className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
                                   >
                                     <option value="todo">To do</option>
@@ -459,7 +520,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
                                   </label>
                                   <select
                                     value={editForm.data.priority}
-                                    onChange={(e) => editForm.setData('priority', e.target.value as TaskPriority)}
+                                    onChange={(e) =>
+                                      editForm.setData('priority', e.target.value as TaskPriority)
+                                    }
                                     className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
                                   >
                                     <option value="">No priority</option>
@@ -504,7 +567,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
                               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                                 <div className="min-w-0">
                                   <div className="flex flex-wrap items-center gap-2">
-                                    <h3 className="text-lg font-semibold text-[var(--gray-12)]">{task.title}</h3>
+                                    <h3 className="text-lg font-semibold text-[var(--gray-12)]">
+                                      {task.title}
+                                    </h3>
                                     <StatusBadge status={task.status} />
                                     {task.priority && (
                                       <span
@@ -542,11 +607,19 @@ const ProjectShow: FC<ProjectShowProps> = ({
                               <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--gray-7)]">
                                 <div>
                                   <dt className="font-medium text-[var(--gray-8)]">Due</dt>
-                                  <dd>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</dd>
+                                  <dd>
+                                    {task.dueDate
+                                      ? new Date(task.dueDate).toLocaleDateString()
+                                      : 'No due date'}
+                                  </dd>
                                 </div>
                                 <div>
                                   <dt className="font-medium text-[var(--gray-8)]">Priority</dt>
-                                  <dd>{task.priority ? taskPriorityLabels[task.priority] : 'No priority'}</dd>
+                                  <dd>
+                                    {task.priority
+                                      ? taskPriorityLabels[task.priority]
+                                      : 'No priority'}
+                                  </dd>
                                 </div>
                                 <div>
                                   <dt className="font-medium text-[var(--gray-8)]">Updated</dt>
@@ -586,130 +659,273 @@ const ProjectShow: FC<ProjectShowProps> = ({
                 </div>
 
                 <aside className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-2)] p-5">
-                  <h3 className="text-base font-semibold text-[var(--gray-12)]">Add task</h3>
+                  <h3 className="text-base font-semibold text-[var(--gray-12)]">Discussion</h3>
                   <p className="mt-2 text-sm leading-6 text-[var(--gray-7)]">
-                    Capture the next concrete piece of work directly inside this project.
+                    Capture project context, questions, and decisions in one place.
                   </p>
 
-                  {canManageTasks ? (
-                    <form onSubmit={createTask} className="mt-5 space-y-4">
+                  {canComment ? (
+                    <form onSubmit={addComment} className="mt-5 space-y-4">
                       <div>
-                        <label htmlFor="new-task-title" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
-                          Task title
+                        <label
+                          htmlFor="project-comment-body"
+                          className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                        >
+                          Comment
                         </label>
-                        <input
-                          id="new-task-title"
-                          type="text"
-                          value={createForm.data.title}
-                          onChange={(e) => createForm.setData('title', e.target.value)}
-                          className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-4 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
-                          placeholder="Draft release checklist"
+                        <textarea
+                          id="project-comment-body"
+                          value={commentForm.data.body}
+                          onChange={(e) => commentForm.setData('body', e.target.value)}
+                          className="min-h-28 w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-4 py-3 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                          placeholder="Share a decision, update, or question..."
+                          rows={4}
                         />
-                        {createForm.errors.title && (
+                        {commentForm.errors.body && (
                           <p className="mt-1.5 text-sm font-medium text-red-600 dark:text-red-400">
-                            {createForm.errors.title}
+                            {commentForm.errors.body}
                           </p>
                         )}
                       </div>
 
-                      <div>
-                        <label htmlFor="new-task-description" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
-                          Description
-                        </label>
-                        <textarea
-                          id="new-task-description"
-                          value={createForm.data.description}
-                          onChange={(e) => createForm.setData('description', e.target.value)}
-                          className="min-h-28 w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-4 py-3 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
-                          placeholder="Add the context, owner notes, or completion criteria."
-                          rows={4}
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="new-task-status" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
-                          Status
-                        </label>
-                        <select
-                          id="new-task-status"
-                          value={createForm.data.status}
-                          onChange={(e) => createForm.setData('status', e.target.value as TaskStatus)}
-                          className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
-                        >
-                          <option value="todo">To do</option>
-                          <option value="in_progress">In progress</option>
-                          <option value="blocked">Blocked</option>
-                          <option value="done">Done</option>
-                        </select>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <label htmlFor="new-task-priority" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
-                            Priority
-                          </label>
-                          <select
-                            id="new-task-priority"
-                            value={createForm.data.priority}
-                            onChange={(e) => createForm.setData('priority', e.target.value as TaskPriority)}
-                            className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
-                          >
-                            <option value="">No priority</option>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label htmlFor="new-task-due-date" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
-                            Due date
-                          </label>
-                          <input
-                            id="new-task-due-date"
-                            type="date"
-                            value={createForm.data.dueDate}
-                            onChange={(e) => createForm.setData('dueDate', e.target.value)}
-                            className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
-                          />
-                        </div>
-                      </div>
-
                       <button
                         type="submit"
-                        disabled={createForm.processing}
+                        disabled={commentForm.processing}
                         className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--brand-9)] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--brand-10)] disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {createForm.processing ? 'Creating task...' : 'Create task'}
+                        {commentForm.processing ? 'Posting comment...' : 'Post comment'}
                       </button>
                     </form>
                   ) : (
                     <div className="mt-5 rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--surface)] p-4 text-sm leading-6 text-[var(--gray-7)]">
-                      You have read-only access to this project. Ask an admin or owner for task editing access.
+                      You have read-only access to this project, so you can view the discussion but
+                      not add to it.
                     </div>
                   )}
                 </aside>
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-6 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                    Add task
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-[var(--gray-7)]">
+                    Capture the next concrete piece of work directly inside this project.
+                  </p>
+                </div>
+              </div>
+
+              {canManageTasks ? (
+                <form onSubmit={createTask} className="mt-5 space-y-4">
+                  <div>
+                    <label
+                      htmlFor="new-task-title"
+                      className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                    >
+                      Task title
+                    </label>
+                    <input
+                      id="new-task-title"
+                      type="text"
+                      value={createForm.data.title}
+                      onChange={(e) => createForm.setData('title', e.target.value)}
+                      className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-4 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                      placeholder="Draft release checklist"
+                    />
+                    {createForm.errors.title && (
+                      <p className="mt-1.5 text-sm font-medium text-red-600 dark:text-red-400">
+                        {createForm.errors.title}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="new-task-description"
+                      className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="new-task-description"
+                      value={createForm.data.description}
+                      onChange={(e) => createForm.setData('description', e.target.value)}
+                      className="min-h-28 w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-4 py-3 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                      placeholder="Add the context, owner notes, or completion criteria."
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="new-task-status"
+                      className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                    >
+                      Status
+                    </label>
+                    <select
+                      id="new-task-status"
+                      value={createForm.data.status}
+                      onChange={(e) => createForm.setData('status', e.target.value as TaskStatus)}
+                      className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                    >
+                      <option value="todo">To do</option>
+                      <option value="in_progress">In progress</option>
+                      <option value="blocked">Blocked</option>
+                      <option value="done">Done</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="new-task-priority"
+                        className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                      >
+                        Priority
+                      </label>
+                      <select
+                        id="new-task-priority"
+                        value={createForm.data.priority}
+                        onChange={(e) =>
+                          createForm.setData('priority', e.target.value as TaskPriority)
+                        }
+                        className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                      >
+                        <option value="">No priority</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="new-task-due-date"
+                        className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                      >
+                        Due date
+                      </label>
+                      <input
+                        id="new-task-due-date"
+                        type="date"
+                        value={createForm.data.dueDate}
+                        onChange={(e) => createForm.setData('dueDate', e.target.value)}
+                        className="w-full rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2.5 text-[var(--gray-12)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-9)]"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={createForm.processing}
+                    className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--brand-9)] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--brand-10)] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {createForm.processing ? 'Creating task...' : 'Create task'}
+                  </button>
+                </form>
+              ) : (
+                <div className="mt-5 rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--gray-1)] p-4 text-sm leading-6 text-[var(--gray-7)]">
+                  You have read-only access to this project. Ask an admin or owner for task editing
+                  access.
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
+              <div className="border-b border-[var(--gray-3)] px-6 py-5">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                  Comments
+                </h2>
+                <p className="mt-2 text-sm text-[var(--gray-7)]">
+                  The conversation stays attached to the project so the context remains visible.
+                </p>
+              </div>
+
+              <div className="space-y-4 p-6">
+                {comments.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--gray-1)] px-5 py-8 text-center">
+                    <p className="text-base font-semibold text-[var(--gray-12)]">No comments yet</p>
+                    <p className="mt-2 text-sm text-[var(--gray-7)]">
+                      Start the discussion with a short update or question.
+                    </p>
+                  </div>
+                ) : (
+                  comments.map((comment) => (
+                    <article
+                      key={comment.id}
+                      className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] p-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gray-3)] text-sm font-bold text-[var(--gray-10)]">
+                          {comment.user.initials}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-semibold text-[var(--gray-12)]">
+                              {comment.user.fullName || comment.user.email}
+                            </p>
+                            <span className="text-xs text-[var(--gray-6)]">
+                              {formatDateTime(comment.createdAt)}
+                            </span>
+                          </div>
+                          <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[var(--gray-8)]">
+                            {comment.body}
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                )}
               </div>
             </section>
           </div>
 
           <aside className="space-y-4">
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Timeline</h2>
-              <dl className="mt-4 space-y-4 text-sm">
-                <div>
-                  <dt className="text-[var(--gray-7)]">Created</dt>
-                  <dd className="mt-1 font-semibold text-[var(--gray-12)]">
-                    {new Date(project.createdAt).toLocaleDateString()}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[var(--gray-7)]">Last updated</dt>
-                  <dd className="mt-1 font-semibold text-[var(--gray-12)]">
-                    {new Date(project.updatedAt).toLocaleDateString()}
-                  </dd>
-                </div>
-              </dl>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                Activity
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--gray-7)]">
+                A running log of project and task changes, newest first.
+              </p>
+
+              <div className="mt-4 space-y-3">
+                {activityLogs.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--gray-1)] p-4 text-sm leading-6 text-[var(--gray-7)]">
+                    No activity recorded yet.
+                  </div>
+                ) : (
+                  activityLogs.map((activity) => (
+                    <article
+                      key={activity.id}
+                      className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] p-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gray-3)] text-sm font-bold text-[var(--gray-10)]">
+                          {activity.user.initials}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-semibold text-[var(--gray-12)]">
+                              {activity.user.fullName || activity.user.email}
+                            </p>
+                            <span className="text-xs text-[var(--gray-6)]">
+                              {formatDateTime(activity.createdAt)}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm leading-6 text-[var(--gray-8)]">
+                            {activity.message}
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
             </section>
 
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
@@ -752,7 +968,10 @@ const ProjectShow: FC<ProjectShowProps> = ({
                   const isLastAdmin = member.role === 'admin' && adminCount <= 1
 
                   return (
-                    <div key={member.id} className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] p-4">
+                    <div
+                      key={member.id}
+                      className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] p-4"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex min-w-0 items-start gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--gray-3)] text-sm font-bold text-[var(--gray-10)]">
@@ -762,7 +981,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
                             <p className="truncate text-sm font-semibold text-[var(--gray-12)]">
                               {member.user.fullName || member.user.email}
                             </p>
-                            <p className="mt-1 truncate text-sm text-[var(--gray-7)]">{member.user.email}</p>
+                            <p className="mt-1 truncate text-sm text-[var(--gray-7)]">
+                              {member.user.email}
+                            </p>
                           </div>
                         </div>
 
@@ -772,7 +993,9 @@ const ProjectShow: FC<ProjectShowProps> = ({
                               <select
                                 value={member.role}
                                 disabled={isLastAdmin}
-                                onChange={(e) => updateMemberRole(member, e.target.value as MemberRole)}
+                                onChange={(e) =>
+                                  updateMemberRole(member, e.target.value as MemberRole)
+                                }
                                 className="rounded-lg border border-[var(--gray-4)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold text-[var(--gray-12)] disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <option value="admin">Admin</option>
@@ -809,9 +1032,15 @@ const ProjectShow: FC<ProjectShowProps> = ({
               </div>
 
               {canManageMembers ? (
-                <form onSubmit={addMember} className="mt-5 space-y-4 rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--gray-1)] p-4">
+                <form
+                  onSubmit={addMember}
+                  className="mt-5 space-y-4 rounded-lg border border-dashed border-[var(--gray-4)] bg-[var(--gray-1)] p-4"
+                >
                   <div>
-                    <label htmlFor="member-email" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
+                    <label
+                      htmlFor="member-email"
+                      className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                    >
                       Add collaborator by email
                     </label>
                     <input
@@ -830,7 +1059,10 @@ const ProjectShow: FC<ProjectShowProps> = ({
                   </div>
 
                   <div>
-                    <label htmlFor="member-role" className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]">
+                    <label
+                      htmlFor="member-role"
+                      className="mb-1.5 block text-sm font-semibold text-[var(--gray-10)]"
+                    >
                       Role
                     </label>
                     <select
@@ -866,18 +1098,22 @@ const ProjectShow: FC<ProjectShowProps> = ({
             </section>
 
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Current state</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                Current state
+              </h2>
               <p className="mt-4 text-sm leading-6 text-[var(--gray-8)]">
                 {project.status === 'active'
                   ? 'This project is part of the active workspace and should stay easy to scan and update.'
                   : project.status === 'completed'
                     ? 'This project is marked complete and can be archived when it no longer needs regular visibility.'
-                  : 'This project is archived and can be restored if it becomes relevant again.'}
+                    : 'This project is archived and can be restored if it becomes relevant again.'}
               </p>
             </section>
 
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">Task summary</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">
+                Task summary
+              </h2>
               <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
                 <div className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] p-3">
                   <dt className="text-[var(--gray-7)]">Visible tasks</dt>
@@ -895,8 +1131,12 @@ const ProjectShow: FC<ProjectShowProps> = ({
                     className="rounded-lg border border-[var(--gray-3)] bg-[var(--gray-1)] px-3 py-2.5"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-[var(--gray-8)]">{taskStatusLabels[status]}</span>
-                      <span className="text-base font-bold text-[var(--gray-12)]">{tasksByStatus[status]}</span>
+                      <span className="text-sm font-medium text-[var(--gray-8)]">
+                        {taskStatusLabels[status]}
+                      </span>
+                      <span className="text-base font-bold text-[var(--gray-12)]">
+                        {tasksByStatus[status]}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -951,7 +1191,11 @@ const ProjectShow: FC<ProjectShowProps> = ({
 
       <ConfirmDialog
         open={memberToDelete !== null}
-        title={memberToDelete ? `Remove ${memberToDelete.user.fullName || memberToDelete.user.email}?` : ''}
+        title={
+          memberToDelete
+            ? `Remove ${memberToDelete.user.fullName || memberToDelete.user.email}?`
+            : ''
+        }
         description="This removes the collaborator from the project."
         confirmLabel="Remove collaborator"
         confirmTone="danger"

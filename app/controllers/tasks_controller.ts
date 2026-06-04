@@ -6,6 +6,7 @@ import Task from '#models/task'
 import { createTaskValidator, updateTaskValidator } from '#validators/task'
 import type { TaskPriority, TaskStatus } from '#validators/task'
 import ProjectPolicy from '#policies/project_policy'
+import { recordActivity } from '#services/activity_log'
 
 type TaskPayload = {
   title: string
@@ -54,9 +55,17 @@ export default class TasksController {
     const project = await this.findManageableProjectOrFail(params.projectId, auth.user!.id)
     const data = await request.validateUsing(createTaskValidator)
 
-    await Task.create({
+    const task = await Task.create({
       projectId: project.id,
       ...this.normalizeTaskPayload(data),
+    })
+
+    await recordActivity({
+      projectId: project.id,
+      taskId: task.id,
+      actorId: auth.user!.id,
+      action: 'task_created',
+      metadata: { taskTitle: task.title },
     })
 
     return response.redirect().back()
@@ -70,12 +79,28 @@ export default class TasksController {
     task.merge(this.normalizeTaskPayload(data))
     await task.save()
 
+    await recordActivity({
+      projectId: project.id,
+      taskId: task.id,
+      actorId: auth.user!.id,
+      action: 'task_updated',
+      metadata: { taskTitle: task.title },
+    })
+
     return response.redirect().back()
   }
 
   public async destroy({ params, response, auth }: HttpContext) {
     const project = await this.findManageableProjectOrFail(params.projectId, auth.user!.id)
     const task = await this.findProjectTaskOrFail(project.id, params.id)
+
+    await recordActivity({
+      projectId: project.id,
+      taskId: task.id,
+      actorId: auth.user!.id,
+      action: 'task_deleted',
+      metadata: { taskTitle: task.title },
+    })
 
     await task.delete()
 

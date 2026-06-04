@@ -35,4 +35,7 @@ export interface ApiDefinition {
     update: typeof routes['tasks.update']
     destroy: typeof routes['tasks.destroy']
   }
+  comments: {
+    store: typeof routes['comments.store']
+  }
 }

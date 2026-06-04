@@ -2,11 +2,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { errors } from '@adonisjs/core'
 import Project from '#models/project'
 import ProjectMember from '#models/project_member'
+import type Comment from '#models/comment'
+import type ActivityLog from '#models/activity_log'
 import { createProjectValidator, updateProjectValidator } from '#validators/project'
 import type Task from '#models/task'
 import { taskStatuses } from '#validators/task'
 import ProjectPolicy from '#policies/project_policy'
 import { resolveProjectRole } from '#services/project_access'
+import { describeActivity, recordActivity } from '#services/activity_log'
+import type User from '#models/user'
 
 export default class ProjectsController {
   private isTaskStatus(value: string): value is (typeof taskStatuses)[number] {
@@ -57,6 +61,40 @@ export default class ProjectsController {
     }
   }
 
+  private serializeUser(user: User) {
+    return {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      initials: user.initials,
+    }
+  }
+
+  private serializeComment(comment: Comment) {
+    return {
+      id: comment.id,
+      projectId: comment.projectId,
+      taskId: comment.taskId,
+      body: comment.body,
+      createdAt: comment.createdAt.toISO() ?? '',
+      user: this.serializeUser(comment.user),
+    }
+  }
+
+  private serializeActivityLog(activityLog: ActivityLog) {
+    return {
+      id: activityLog.id,
+      projectId: activityLog.projectId,
+      taskId: activityLog.taskId,
+      commentId: activityLog.commentId,
+      action: activityLog.action,
+      message: describeActivity(activityLog.action, activityLog.metadata),
+      metadata: activityLog.metadata,
+      createdAt: activityLog.createdAt.toISO() ?? '',
+      user: this.serializeUser(activityLog.user),
+    }
+  }
+
   // GET /projects
   public async index({ inertia, auth }: HttpContext) {
     const userId = auth.user!.id
@@ -64,10 +102,7 @@ export default class ProjectsController {
     const projects = await Project.query()
       .where((query) => {
         query.where('user_id', userId)
-        query.orWhereIn(
-          'id',
-          ProjectMember.query().select('project_id').where('user_id', userId)
-        )
+        query.orWhereIn('id', ProjectMember.query().select('project_id').where('user_id', userId))
       })
       .where('status', '!=', 'archived')
       .orderBy('created_at', 'desc')
@@ -84,10 +119,7 @@ export default class ProjectsController {
     const projects = await Project.query()
       .where((query) => {
         query.where('user_id', userId)
-        query.orWhereIn(
-          'id',
-          ProjectMember.query().select('project_id').where('user_id', userId)
-        )
+        query.orWhereIn('id', ProjectMember.query().select('project_id').where('user_id', userId))
       })
       .where('status', 'archived')
       .orderBy('updated_at', 'desc')
@@ -118,6 +150,12 @@ export default class ProjectsController {
       role: 'admin',
     })
 
+    await recordActivity({
+      projectId: project.id,
+      actorId: auth.user!.id,
+      action: 'project_created',
+    })
+
     return response.redirect().toRoute('projects.index')
   }
 
@@ -144,37 +182,55 @@ export default class ProjectsController {
       tasksQuery.orderBy('due_date', 'asc').orderBy('created_at', 'desc')
     })
 
-    return inertia.render('Projects/Show' as never, {
-      project: this.serializeProject(project),
-      tasks: project.tasks.map((task) => this.serializeTask(task)),
-      members: project.members
-        .filter((member) => member.userId !== project.userId)
-        .map((member) => ({
-          id: member.id,
-          projectId: member.projectId,
-          userId: member.userId,
-          role: member.role,
-          user: {
-            id: member.user.id,
-            fullName: member.user.fullName,
-            email: member.user.email,
-            initials: member.user.initials,
-          },
-        })),
-      owner: {
-        id: project.user.id,
-        fullName: project.user.fullName,
-        email: project.user.email,
-        initials: project.user.initials,
-      },
-      currentUserRole,
-      canManageMembers: currentUserRole === 'owner' || currentUserRole === 'admin',
-      canManageTasks:
-        currentUserRole === 'owner' || currentUserRole === 'admin' || currentUserRole === 'member',
-      canManageProject: currentUserRole === 'owner' || currentUserRole === 'admin',
-      taskStatusFilter: selectedTaskStatus,
-      taskStatusOptions: ['all', ...taskStatuses],
-    } as never)
+    await project.load('comments', (commentsQuery) => {
+      commentsQuery.preload('user').orderBy('created_at', 'asc')
+    })
+
+    await project.load('activityLogs', (activityQuery) => {
+      activityQuery.preload('user').orderBy('created_at', 'desc').limit(20)
+    })
+
+    return inertia.render(
+      'Projects/Show' as never,
+      {
+        project: this.serializeProject(project),
+        tasks: project.tasks.map((task) => this.serializeTask(task)),
+        comments: project.comments.map((comment) => this.serializeComment(comment)),
+        activityLogs: project.activityLogs.map((activityLog) =>
+          this.serializeActivityLog(activityLog)
+        ),
+        members: project.members
+          .filter((member) => member.userId !== project.userId)
+          .map((member) => ({
+            id: member.id,
+            projectId: member.projectId,
+            userId: member.userId,
+            role: member.role,
+            user: {
+              id: member.user.id,
+              fullName: member.user.fullName,
+              email: member.user.email,
+              initials: member.user.initials,
+            },
+          })),
+        owner: {
+          id: project.user.id,
+          fullName: project.user.fullName,
+          email: project.user.email,
+          initials: project.user.initials,
+        },
+        currentUserRole,
+        canManageMembers: currentUserRole === 'owner' || currentUserRole === 'admin',
+        canManageTasks:
+          currentUserRole === 'owner' ||
+          currentUserRole === 'admin' ||
+          currentUserRole === 'member',
+        canManageProject: currentUserRole === 'owner' || currentUserRole === 'admin',
+        canComment: currentUserRole !== null,
+        taskStatusFilter: selectedTaskStatus,
+        taskStatusOptions: ['all', ...taskStatuses],
+      } as never
+    )
   }
 
   // GET /projects/:id/edit
@@ -191,6 +247,12 @@ export default class ProjectsController {
     project.merge(data)
     await project.save()
 
+    await recordActivity({
+      projectId: project.id,
+      actorId: auth.user!.id,
+      action: 'project_updated',
+    })
+
     return response.redirect().toRoute('projects.index')
   }
 
@@ -200,6 +262,12 @@ export default class ProjectsController {
     project.status = 'archived'
     await project.save()
 
+    await recordActivity({
+      projectId: project.id,
+      actorId: auth.user!.id,
+      action: 'project_archived',
+    })
+
     return response.redirect().toRoute('projects.index')
   }
 
@@ -208,6 +276,12 @@ export default class ProjectsController {
     const project = await this.findManageableProjectOrFail(params.id, auth.user!.id)
     project.status = 'active'
     await project.save()
+
+    await recordActivity({
+      projectId: project.id,
+      actorId: auth.user!.id,
+      action: 'project_restored',
+    })
 
     return response.redirect().toRoute('projects.archived')
   }

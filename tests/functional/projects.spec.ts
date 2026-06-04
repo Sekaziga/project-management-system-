@@ -3,6 +3,7 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import User from '#models/user'
 import Project from '#models/project'
 import ProjectMember from '#models/project_member'
+import ActivityLog from '#models/activity_log'
 
 test.group('Projects', (group) => {
   group.each.setup(() => {
@@ -113,6 +114,12 @@ test.group('Projects', (group) => {
     assert.equal(project.name, 'Updated Name')
     assert.equal(project.description, 'Updated description')
     assert.equal(project.status, 'completed')
+
+    const activity = await ActivityLog.query()
+      .where('project_id', project.id)
+      .orderBy('created_at', 'desc')
+      .firstOrFail()
+    assert.equal(activity.action, 'project_updated')
   })
 
   test('archives a project', async ({ client, assert }) => {
@@ -129,6 +136,12 @@ test.group('Projects', (group) => {
 
     await project.refresh()
     assert.equal(project.status, 'archived')
+
+    const activity = await ActivityLog.query()
+      .where('project_id', project.id)
+      .orderBy('created_at', 'desc')
+      .firstOrFail()
+    assert.equal(activity.action, 'project_archived')
   })
 
   test('restores an archived project', async ({ client, assert }) => {
@@ -146,6 +159,12 @@ test.group('Projects', (group) => {
 
     await project.refresh()
     assert.equal(project.status, 'active')
+
+    const activity = await ActivityLog.query()
+      .where('project_id', project.id)
+      .orderBy('created_at', 'desc')
+      .firstOrFail()
+    assert.equal(activity.action, 'project_restored')
   })
 
   test('deletes a project', async ({ client, assert }) => {

@@ -1,4 +1,4 @@
-import Project from '#models/project'
+import type Project from '#models/project'
 import { resolveProjectRole } from '#services/project_access'
 
 export default class ProjectMemberPolicy {
