@@ -283,4 +283,16 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['destroy']>>>
     }
   }
+  'comments.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/comments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/comment').createCommentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/comment').createCommentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/comments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/comments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
 }

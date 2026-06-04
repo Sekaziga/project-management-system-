@@ -4,6 +4,7 @@ import User from '#models/user'
 import Project from '#models/project'
 import Task from '#models/task'
 import ProjectMember from '#models/project_member'
+import ActivityLog from '#models/activity_log'
 
 test.group('Tasks', (group) => {
   group.each.setup(() => {
@@ -62,6 +63,48 @@ test.group('Tasks', (group) => {
     assert.equal(task!.status, 'in_progress')
     assert.equal(task!.priority, 'high')
     assert.equal(task!.dueDate?.toISODate(), '2026-06-15')
+
+    const activity = await ActivityLog.query()
+      .where('project_id', project.id)
+      .orderBy('created_at', 'desc')
+      .firstOrFail()
+    assert.equal(activity.action, 'task_created')
+    assert.equal(activity.metadata?.taskTitle, 'Plan release')
+  })
+
+  test('records activity for task lifecycle actions', async ({ client, assert }) => {
+    const user = await createUser('owner@example.com')
+    const project = await createProjectFor(user)
+    const task = await createTaskFor(project, {
+      title: 'Initial task',
+      status: 'todo',
+      priority: 'low',
+    })
+
+    await client
+      .put(`/projects/${project.id}/tasks/${task.id}`)
+      .loginAs(user)
+      .form({
+        title: 'Updated task',
+        description: 'Updated description',
+        status: 'in_progress',
+        priority: 'medium',
+        dueDate: '2026-06-18',
+      })
+      .redirects(0)
+
+    await client.delete(`/projects/${project.id}/tasks/${task.id}`).loginAs(user).redirects(0)
+
+    const activities = await ActivityLog.query()
+      .where('project_id', project.id)
+      .orderBy('created_at', 'asc')
+
+    assert.deepEqual(
+      activities.map((activity) => activity.action),
+      ['task_updated', 'task_deleted']
+    )
+    assert.equal(activities[0].metadata?.taskTitle, 'Updated task')
+    assert.equal(activities[1].metadata?.taskTitle, 'Updated task')
   })
 
   test('updates a task in the user project', async ({ client, assert }) => {

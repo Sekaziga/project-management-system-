@@ -144,6 +144,12 @@ const routes = {
     tokens: [{"old":"/projects/:projectId/tasks/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks/:id","type":0,"val":"tasks","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['tasks.destroy']['types'],
   },
+  'comments.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/comments',
+    tokens: [{"old":"/projects/:projectId/comments","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/comments","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/comments","type":0,"val":"comments","end":""}],
+    types: placeholder as Registry['comments.store']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

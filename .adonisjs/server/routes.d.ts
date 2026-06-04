@@ -27,6 +27,7 @@ export type ScannedRoutes = {
     'tasks.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'tasks.update': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'tasks.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'comments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -57,6 +58,7 @@ export type ScannedRoutes = {
     'projects.store': { paramsTuple?: []; params?: {} }
     'projects.members.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'tasks.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'comments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
   }
   PUT: {
     'projects.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

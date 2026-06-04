@@ -4,6 +4,8 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import ProjectMember from '#models/project_member'
 import Task from '#models/task'
+import Comment from '#models/comment'
+import ActivityLog from '#models/activity_log'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })
@@ -35,4 +37,10 @@ export default class Project extends BaseModel {
 
   @hasMany(() => ProjectMember)
   declare members: HasMany<typeof ProjectMember>
+
+  @hasMany(() => Comment)
+  declare comments: HasMany<typeof Comment>
+
+  @hasMany(() => ActivityLog)
+  declare activityLogs: HasMany<typeof ActivityLog>
 }

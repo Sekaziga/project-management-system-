@@ -5,7 +5,10 @@ import type { ProjectMemberRole } from '#validators/project_member'
 
 export type ProjectAccessRole = 'owner' | ProjectMemberRole | null
 
-export async function resolveProjectRole(project: Project, userId: number): Promise<ProjectAccessRole> {
+export async function resolveProjectRole(
+  project: Project,
+  userId: number
+): Promise<ProjectAccessRole> {
   if (project.userId === userId) {
     return 'owner'
   }
@@ -18,7 +21,10 @@ export async function resolveProjectRole(project: Project, userId: number): Prom
   return membership ? membership.role : null
 }
 
-export async function assertProjectAccess(projectId: number | string, userId: number): Promise<Project> {
+export async function assertProjectAccess(
+  projectId: number | string,
+  userId: number
+): Promise<Project> {
   const project = await Project.query().where('id', projectId).firstOrFail()
   const role = await resolveProjectRole(project, userId)
 
