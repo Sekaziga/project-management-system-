@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
 import User from '#models/user'
 import Project from '#models/project'
+import ProjectMember from '#models/project_member'
 
 test.group('Projects', (group) => {
   group.each.setup(() => {
@@ -16,13 +17,27 @@ test.group('Projects', (group) => {
     })
   }
 
-  async function createProjectFor(user: User, attributes: Partial<Project> = {}) {
-    return Project.create({
+  async function createProjectFor(
+    user: User,
+    attributes: Partial<Project> = {},
+    withOwnerMembership = false
+  ) {
+    const project = await Project.create({
       userId: user.id,
       name: attributes.name ?? 'Test Project',
       description: attributes.description ?? 'A test project',
       status: attributes.status ?? 'active',
     })
+
+    if (withOwnerMembership) {
+      await ProjectMember.create({
+        projectId: project.id,
+        userId: user.id,
+        role: 'admin',
+      })
+    }
+
+    return project
   }
 
   test('redirects unauthenticated users to login', async ({ client }) => {
@@ -297,5 +312,73 @@ test.group('Projects', (group) => {
 
     const existingProject = await Project.find(project.id)
     assert.isNotNull(existingProject)
+  })
+
+  test('allows collaborators to view shared projects', async ({ client }) => {
+    const owner = await createUser('owner@example.com')
+    const collaborator = await createUser('collab@example.com')
+    const project = await createProjectFor(owner, { name: 'Shared Project' })
+
+    await ProjectMember.create({
+      projectId: project.id,
+      userId: collaborator.id,
+      role: 'member',
+    })
+
+    const response = await client.get(`/projects/${project.id}`).loginAs(collaborator)
+
+    response.assertStatus(200)
+    response.assertTextIncludes('Shared Project')
+  })
+
+  test('allows owners to add and remove collaborators', async ({ client, assert }) => {
+    const owner = await createUser('owner@example.com')
+    const collaborator = await createUser('collaborator@example.com')
+    const project = await createProjectFor(owner, { name: 'Team Project' }, true)
+
+    const addResponse = await client
+      .post(`/projects/${project.id}/members`)
+      .loginAs(owner)
+      .form({ email: collaborator.email, role: 'viewer' })
+      .redirects(0)
+
+    addResponse.assertStatus(302)
+
+    const membership = await ProjectMember.query()
+      .where('project_id', project.id)
+      .where('user_id', collaborator.id)
+      .firstOrFail()
+
+    assert.equal(membership.role, 'viewer')
+
+    const removeResponse = await client
+      .delete(`/projects/${project.id}/members/${membership.id}`)
+      .loginAs(owner)
+      .redirects(0)
+
+    removeResponse.assertStatus(302)
+
+    const deletedMembership = await ProjectMember.find(membership.id)
+    assert.isNull(deletedMembership)
+  })
+
+  test('prevents removing the owner collaborator record', async ({ client, assert }) => {
+    const owner = await createUser('owner@example.com')
+    const project = await createProjectFor(owner, { name: 'Owned Project' }, true)
+
+    const ownerMembership = await ProjectMember.query()
+      .where('project_id', project.id)
+      .where('user_id', owner.id)
+      .firstOrFail()
+
+    const response = await client
+      .delete(`/projects/${project.id}/members/${ownerMembership.id}`)
+      .loginAs(owner)
+      .redirects(0)
+
+    response.assertStatus(302)
+
+    await ownerMembership.refresh()
+    assert.equal(ownerMembership.role, 'admin')
   })
 })

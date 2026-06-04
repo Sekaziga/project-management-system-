@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 import User from '#models/user'
 import Project from '#models/project'
 import Task from '#models/task'
+import ProjectMember from '#models/project_member'
 
 test.group('Dashboard', (group) => {
   group.each.setup(() => {
@@ -96,5 +97,26 @@ test.group('Dashboard', (group) => {
     response.assertTextIncludes('2')
     assert.notInclude(response.text(), 'Other User Project')
     assert.notInclude(response.text(), 'Other user task')
+  })
+
+  test('includes shared projects for collaborator access', async ({ client, assert }) => {
+    const owner = await createUser('owner@example.com')
+    const collaborator = await createUser('collab@example.com')
+    const sharedProject = await createProjectFor(owner, {
+      name: 'Shared Dashboard Project',
+      status: 'active',
+    })
+
+    await ProjectMember.create({
+      projectId: sharedProject.id,
+      userId: collaborator.id,
+      role: 'viewer',
+    })
+
+    const response = await client.get('/dashboard').loginAs(collaborator)
+
+    response.assertStatus(200)
+    response.assertTextIncludes('Shared Dashboard Project')
+    assert.notInclude(response.text(), 'Other User Project')
   })
 })

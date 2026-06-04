@@ -8,7 +8,7 @@ Assessed from the repository state on `2026-05-22`.
 - Phase 2: `Current phase / in progress`
 - Phase 3: `Not started`
 - Phase 4: `Not started`
-- Phase 5: `Not started`
+- Phase 5: `Complete`
 - Phase 6: `Not started`
 - Phase 7: `Not started`
 - Phase 8: `Not started`
@@ -84,7 +84,7 @@ Complexity: `Medium`
 
 ## Phase 3: Tasks / To-Dos
 
-Status: `Not started`
+Status: `Complete`
 
 Goal: Add task management inside projects.
 

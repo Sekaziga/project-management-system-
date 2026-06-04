@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Project from '#models/project'
 import Task from '#models/task'
+import ProjectMember from '#models/project_member'
 
 type ProjectStatus = 'active' | 'completed' | 'archived'
 type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'done'
@@ -34,7 +35,13 @@ export default class DashboardController {
     const userId = auth.user!.id
 
     const projects = await Project.query()
-      .where('user_id', userId)
+      .where((query) => {
+        query.where('user_id', userId)
+        query.orWhereIn(
+          'id',
+          ProjectMember.query().select('project_id').where('user_id', userId)
+        )
+      })
       .orderBy('updated_at', 'desc')
 
     const projectIds = projects.map((project) => project.id)
