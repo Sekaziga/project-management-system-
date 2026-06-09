@@ -119,6 +119,12 @@ export default class AttachmentsController {
 
     await file.move(uploadsDir, { name: uniqueName })
 
+    if (!file.isValid) {
+      const message = file.errors.map((e) => e.message).join(', ')
+      session.flash('errors', { file: message })
+      return response.redirect().back()
+    }
+
     const attachment = await Attachment.create({
       projectId: project.id,
       taskId: data.taskId ?? null,
@@ -157,12 +163,11 @@ export default class AttachmentsController {
       throw new errors.E_HTTP_EXCEPTION(undefined, { status: 404 })
     }
 
-    response.stream(createReadStream(downloadPath))
     response.header('Content-Type', attachment.mimeType)
     response.header('Content-Disposition', `attachment; filename="${attachment.originalName}"`)
     response.header('Content-Length', attachment.fileSize.toString())
 
-    return response
+    return response.stream(createReadStream(downloadPath))
   }
 
   // DELETE /projects/:projectId/attachments/:id

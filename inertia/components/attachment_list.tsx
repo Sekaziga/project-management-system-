@@ -58,7 +58,6 @@ const AttachmentList: FC<AttachmentListProps> = ({ projectId, attachments, canAt
     setUploadProcessing(true)
 
     router.post(`/projects/${projectId}/attachments`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
       preserveScroll: true,
       onFinish: () => {
         setUploadProcessing(false)
