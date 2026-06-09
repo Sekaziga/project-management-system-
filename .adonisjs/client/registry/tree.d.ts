@@ -3,15 +3,16 @@ import type { routes } from './index.ts'
 
 export interface ApiDefinition {
   home: typeof routes['home']
-  newAccount: {
-    create: typeof routes['new_account.create']
-    store: typeof routes['new_account.store']
+  signup: {
+    create: typeof routes['signup.create']
+    store: typeof routes['signup.store']
   }
   session: {
     create: typeof routes['session.create']
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
+  dashboard: typeof routes['dashboard']
   projects: {
     index: typeof routes['projects.index']
     archived: typeof routes['projects.archived']
@@ -23,5 +24,18 @@ export interface ApiDefinition {
     archive: typeof routes['projects.archive']
     restore: typeof routes['projects.restore']
     destroy: typeof routes['projects.destroy']
+    members: {
+      store: typeof routes['projects.members.store']
+      update: typeof routes['projects.members.update']
+      destroy: typeof routes['projects.members.destroy']
+    }
+  }
+  tasks: {
+    store: typeof routes['tasks.store']
+    update: typeof routes['tasks.update']
+    destroy: typeof routes['tasks.destroy']
+  }
+  comments: {
+    store: typeof routes['comments.store']
   }
 }

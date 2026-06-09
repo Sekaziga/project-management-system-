@@ -12,17 +12,17 @@ const routes = {
     tokens: [{"old":"/","type":0,"val":"/","end":""}],
     types: placeholder as Registry['home']['types'],
   },
-  'new_account.create': {
+  'signup.create': {
     methods: ["GET","HEAD"],
     pattern: '/signup',
     tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.create']['types'],
+    types: placeholder as Registry['signup.create']['types'],
   },
-  'new_account.store': {
+  'signup.store': {
     methods: ["POST"],
     pattern: '/signup',
     tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.store']['types'],
+    types: placeholder as Registry['signup.store']['types'],
   },
   'session.create': {
     methods: ["GET","HEAD"],
@@ -41,6 +41,12 @@ const routes = {
     pattern: '/logout',
     tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['session.destroy']['types'],
+  },
+  'dashboard': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard',
+    tokens: [{"old":"/dashboard","type":0,"val":"dashboard","end":""}],
+    types: placeholder as Registry['dashboard']['types'],
   },
   'projects.index': {
     methods: ["GET","HEAD"],
@@ -101,6 +107,48 @@ const routes = {
     pattern: '/projects/:id',
     tokens: [{"old":"/projects/:id","type":0,"val":"projects","end":""},{"old":"/projects/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['projects.destroy']['types'],
+  },
+  'projects.members.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/members',
+    tokens: [{"old":"/projects/:projectId/members","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members","type":0,"val":"members","end":""}],
+    types: placeholder as Registry['projects.members.store']['types'],
+  },
+  'projects.members.update': {
+    methods: ["PUT"],
+    pattern: '/projects/:projectId/members/:id',
+    tokens: [{"old":"/projects/:projectId/members/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members/:id","type":0,"val":"members","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.members.update']['types'],
+  },
+  'projects.members.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:projectId/members/:id',
+    tokens: [{"old":"/projects/:projectId/members/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/members/:id","type":0,"val":"members","end":""},{"old":"/projects/:projectId/members/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['projects.members.destroy']['types'],
+  },
+  'tasks.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/tasks',
+    tokens: [{"old":"/projects/:projectId/tasks","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks","type":0,"val":"tasks","end":""}],
+    types: placeholder as Registry['tasks.store']['types'],
+  },
+  'tasks.update': {
+    methods: ["PUT"],
+    pattern: '/projects/:projectId/tasks/:id',
+    tokens: [{"old":"/projects/:projectId/tasks/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks/:id","type":0,"val":"tasks","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['tasks.update']['types'],
+  },
+  'tasks.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:projectId/tasks/:id',
+    tokens: [{"old":"/projects/:projectId/tasks/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/tasks/:id","type":0,"val":"tasks","end":""},{"old":"/projects/:projectId/tasks/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['tasks.destroy']['types'],
+  },
+  'comments.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/comments',
+    tokens: [{"old":"/projects/:projectId/comments","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/comments","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/comments","type":0,"val":"comments","end":""}],
+    types: placeholder as Registry['comments.store']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

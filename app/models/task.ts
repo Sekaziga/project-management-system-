@@ -1,27 +1,31 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import User from '#models/user'
-import ProjectMember from '#models/project_member'
-import Task from '#models/task'
+import Project from '#models/project'
 import Comment from '#models/comment'
 import ActivityLog from '#models/activity_log'
 
-export default class Project extends BaseModel {
+export default class Task extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare userId: number
+  declare projectId: number
 
   @column()
-  declare name: string
+  declare title: string
 
   @column()
   declare description: string | null
 
   @column()
-  declare status: 'active' | 'completed' | 'archived'
+  declare status: 'todo' | 'in_progress' | 'blocked' | 'done'
+
+  @column()
+  declare priority: 'low' | 'medium' | 'high' | null
+
+  @column.date()
+  declare dueDate: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -29,14 +33,8 @@ export default class Project extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @belongsTo(() => User)
-  declare user: BelongsTo<typeof User>
-
-  @hasMany(() => Task)
-  declare tasks: HasMany<typeof Task>
-
-  @hasMany(() => ProjectMember)
-  declare members: HasMany<typeof ProjectMember>
+  @belongsTo(() => Project)
+  declare project: BelongsTo<typeof Project>
 
   @hasMany(() => Comment)
   declare comments: HasMany<typeof Comment>

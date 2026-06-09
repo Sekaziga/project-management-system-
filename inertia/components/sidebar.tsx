@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import ThemeToggle from './theme-toggle'
@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: '/', label: 'Home', icon: 'home', always: true },
+  { href: '/dashboard', label: 'Dashboard', icon: 'home', auth: true },
   { href: '/projects', label: 'Projects', icon: 'projects', auth: true },
   { href: '/projects/archived', label: 'Archived', icon: 'archive', auth: true },
   { href: '/login', label: 'Login', icon: 'login', guest: true },
@@ -24,13 +24,15 @@ export default function Sidebar({ user }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const currentPath = usePage().url.split('?')[0]
 
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [currentPath])
+
   function closeMobile() {
     setMobileOpen(false)
   }
 
   function isActive(href: string) {
-    if (href === '/') return currentPath === '/'
-
     const hasMoreSpecificMatch = navItems.some((item) => item.href !== href && item.href === currentPath)
     if (hasMoreSpecificMatch) return false
 
@@ -61,9 +63,22 @@ export default function Sidebar({ user }: SidebarProps) {
           {collapsed ? (
             <span className="text-lg font-extrabold tracking-tight text-[var(--gray-12)]">PM</span>
           ) : (
-            <Link href="/" className="text-base font-extrabold tracking-tight text-[var(--gray-12)]" onClick={closeMobile}>
-              Project Manager
-            </Link>
+            <div className="flex w-full items-center justify-between gap-3">
+              <Link href="/" className="min-w-0 text-base font-extrabold tracking-tight text-[var(--gray-12)]" onClick={closeMobile}>
+                Project Manager
+              </Link>
+              <button
+                type="button"
+                onClick={closeMobile}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--gray-3)] text-[var(--gray-8)] transition-colors hover:bg-[var(--gray-2)] hover:text-[var(--gray-12)] md:hidden"
+                aria-label="Close navigation"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
 
@@ -77,7 +92,7 @@ export default function Sidebar({ user }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={closeMobile}
-                className={`flex items-center gap-3 rounded-xl border transition-all duration-200
+                className={`flex items-center gap-3 rounded-lg border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-9)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]
                   ${isActive(item.href)
                     ? 'border-[color:var(--brand-9)]/25 bg-[color:var(--brand-9)]/15 text-[var(--gray-12)]'
                     : 'border-transparent text-[var(--gray-8)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] hover:border-[var(--gray-4)]'}
@@ -122,7 +137,7 @@ export default function Sidebar({ user }: SidebarProps) {
           <ThemeToggle collapsed={collapsed} />
 
           {user && !collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[var(--gray-2)] border border-[var(--gray-3)]">
+            <div className="flex items-center gap-3 rounded-lg border border-[var(--gray-3)] bg-[var(--gray-2)] px-3 py-2.5">
               <div className="w-8 h-8 rounded-full bg-[var(--gray-12)] text-[var(--gray-1)] flex items-center justify-center text-xs font-extrabold">
                 {user.initials}
               </div>
@@ -149,7 +164,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex items-center justify-center h-8 border-t border-[var(--gray-3)] text-[var(--gray-8)] hover:text-[var(--gray-12)] transition-colors"
+          className="hidden h-8 items-center justify-center border-t border-[var(--gray-3)] text-[var(--gray-8)] transition-colors hover:text-[var(--gray-12)] md:flex"
+          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +182,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-3 left-3 z-30 md:hidden p-2.5 rounded-xl bg-[var(--surface)] border border-[var(--gray-3)] text-[var(--gray-8)] shadow-lg"
+        className="fixed left-3 top-3 z-30 rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-2.5 text-[var(--gray-8)] shadow-lg md:hidden"
+        aria-label="Open navigation"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
           <line x1="3" y1="6" x2="21" y2="6" />

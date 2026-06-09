@@ -4,7 +4,11 @@
  */
 
 export const controllers = {
+  Comments: () => import('#controllers/comments_controller'),
+  Dashboard: () => import('#controllers/dashboard_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
+  ProjectMembers: () => import('#controllers/project_members_controller'),
   Projects: () => import('#controllers/projects_controller'),
   Session: () => import('#controllers/session_controller'),
+  Tasks: () => import('#controllers/tasks_controller'),
 }

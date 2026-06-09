@@ -26,6 +26,29 @@ export class ProjectSchema extends BaseModel {
   declare userId: number | null
 }
 
+export class TaskSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'dueDate', 'id', 'priority', 'projectId', 'status', 'title', 'updatedAt'] as const
+  $columns = TaskSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column.date()
+  declare dueDate: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare priority: string | null
+  @column()
+  declare projectId: number
+  @column()
+  declare status: string
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns

@@ -19,7 +19,7 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'new_account.create': {
+  'signup.create': {
     methods: ["GET","HEAD"]
     pattern: '/signup'
     types: {
@@ -31,7 +31,7 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['create']>>>
     }
   }
-  'new_account.store': {
+  'signup.store': {
     methods: ["POST"]
     pattern: '/signup'
     types: {
@@ -79,6 +79,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['destroy']>>>
     }
   }
+  'dashboard': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['index']>>>
+    }
+  }
   'projects.index': {
     methods: ["GET","HEAD"]
     pattern: '/projects'
@@ -119,12 +131,12 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/projects'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/project').createProjectValidator)>>
       paramsTuple: []
       params: {}
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/project').createProjectValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'projects.show': {
@@ -155,12 +167,12 @@ export interface Registry {
     methods: ["PUT"]
     pattern: '/projects/:id'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/project').updateProjectValidator)>>
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/project').updateProjectValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'projects.archive': {
@@ -197,6 +209,90 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/projects_controller').default['destroy']>>>
+    }
+  }
+  'projects.members.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/members'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/project_member').inviteProjectMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/project_member').inviteProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.members.update': {
+    methods: ["PUT"]
+    pattern: '/projects/:projectId/members/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/project_member').updateProjectMemberValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/project_member').updateProjectMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'projects.members.destroy': {
+    methods: ["DELETE"]
+    pattern: '/projects/:projectId/members/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/project_members_controller').default['destroy']>>>
+    }
+  }
+  'tasks.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/tasks'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/task').createTaskValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/task').createTaskValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tasks.update': {
+    methods: ["PUT"]
+    pattern: '/projects/:projectId/tasks/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/task').updateTaskValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/task').updateTaskValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tasks.destroy': {
+    methods: ["DELETE"]
+    pattern: '/projects/:projectId/tasks/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tasks_controller').default['destroy']>>>
+    }
+  }
+  'comments.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/comments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/comment').createCommentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/comment').createCommentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/comments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/comments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
 }
