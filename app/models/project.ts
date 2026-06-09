@@ -6,6 +6,7 @@ import ProjectMember from '#models/project_member'
 import Task from '#models/task'
 import Comment from '#models/comment'
 import ActivityLog from '#models/activity_log'
+import Attachment from '#models/attachment'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })
@@ -43,4 +44,7 @@ export default class Project extends BaseModel {
 
   @hasMany(() => ActivityLog)
   declare activityLogs: HasMany<typeof ActivityLog>
+
+  @hasMany(() => Attachment)
+  declare attachments: HasMany<typeof Attachment>
 }

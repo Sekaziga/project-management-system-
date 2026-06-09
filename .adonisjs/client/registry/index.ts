@@ -150,6 +150,30 @@ const routes = {
     tokens: [{"old":"/projects/:projectId/comments","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/comments","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/comments","type":0,"val":"comments","end":""}],
     types: placeholder as Registry['comments.store']['types'],
   },
+  'attachments.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/:projectId/attachments',
+    tokens: [{"old":"/projects/:projectId/attachments","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/attachments","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/attachments","type":0,"val":"attachments","end":""}],
+    types: placeholder as Registry['attachments.index']['types'],
+  },
+  'attachments.store': {
+    methods: ["POST"],
+    pattern: '/projects/:projectId/attachments',
+    tokens: [{"old":"/projects/:projectId/attachments","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/attachments","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/attachments","type":0,"val":"attachments","end":""}],
+    types: placeholder as Registry['attachments.store']['types'],
+  },
+  'attachments.download': {
+    methods: ["GET","HEAD"],
+    pattern: '/projects/:projectId/attachments/:id/download',
+    tokens: [{"old":"/projects/:projectId/attachments/:id/download","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/attachments/:id/download","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/attachments/:id/download","type":0,"val":"attachments","end":""},{"old":"/projects/:projectId/attachments/:id/download","type":1,"val":"id","end":""},{"old":"/projects/:projectId/attachments/:id/download","type":0,"val":"download","end":""}],
+    types: placeholder as Registry['attachments.download']['types'],
+  },
+  'attachments.destroy': {
+    methods: ["DELETE"],
+    pattern: '/projects/:projectId/attachments/:id',
+    tokens: [{"old":"/projects/:projectId/attachments/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/attachments/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/attachments/:id","type":0,"val":"attachments","end":""},{"old":"/projects/:projectId/attachments/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['attachments.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
