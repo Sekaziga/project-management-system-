@@ -38,4 +38,10 @@ export interface ApiDefinition {
   comments: {
     store: typeof routes['comments.store']
   }
+  attachments: {
+    index: typeof routes['attachments.index']
+    store: typeof routes['attachments.store']
+    download: typeof routes['attachments.download']
+    destroy: typeof routes['attachments.destroy']
+  }
 }

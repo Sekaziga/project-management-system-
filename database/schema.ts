@@ -7,6 +7,84 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class ActivityLogSchema extends BaseModel {
+  static $columns = ['action', 'actorId', 'commentId', 'createdAt', 'id', 'metadata', 'projectId', 'taskId'] as const
+  $columns = ActivityLogSchema.$columns
+  @column()
+  declare action: string
+  @column()
+  declare actorId: number
+  @column()
+  declare commentId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare projectId: number
+  @column()
+  declare taskId: number | null
+}
+
+export class AttachmentSchema extends BaseModel {
+  static $columns = ['createdAt', 'fileName', 'fileSize', 'id', 'mimeType', 'originalName', 'projectId', 'taskId', 'userId'] as const
+  $columns = AttachmentSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare fileName: string
+  @column()
+  declare fileSize: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare mimeType: string
+  @column()
+  declare originalName: string
+  @column()
+  declare projectId: number
+  @column()
+  declare taskId: number | null
+  @column()
+  declare userId: number
+}
+
+export class CommentSchema extends BaseModel {
+  static $columns = ['body', 'createdAt', 'id', 'projectId', 'taskId', 'userId'] as const
+  $columns = CommentSchema.$columns
+  @column()
+  declare body: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare projectId: number
+  @column()
+  declare taskId: number | null
+  @column()
+  declare userId: number
+}
+
+export class ProjectMemberSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'projectId', 'role', 'updatedAt', 'userId'] as const
+  $columns = ProjectMemberSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare projectId: number
+  @column()
+  declare role: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: number
+}
+
 export class ProjectSchema extends BaseModel {
   static $columns = ['createdAt', 'description', 'id', 'name', 'status', 'updatedAt', 'userId'] as const
   $columns = ProjectSchema.$columns

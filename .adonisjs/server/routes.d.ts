@@ -28,6 +28,10 @@ export type ScannedRoutes = {
     'tasks.update': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'tasks.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'comments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.index': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -39,6 +43,8 @@ export type ScannedRoutes = {
     'projects.create': { paramsTuple?: []; params?: {} }
     'projects.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'projects.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'attachments.index': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -50,6 +56,8 @@ export type ScannedRoutes = {
     'projects.create': { paramsTuple?: []; params?: {} }
     'projects.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'projects.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'attachments.index': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
   }
   POST: {
     'signup.store': { paramsTuple?: []; params?: {} }
@@ -59,6 +67,7 @@ export type ScannedRoutes = {
     'projects.members.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'tasks.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'comments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
+    'attachments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
   }
   PUT: {
     'projects.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -71,6 +80,7 @@ export type ScannedRoutes = {
     'projects.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'projects.members.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'tasks.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
