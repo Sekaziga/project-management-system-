@@ -5,6 +5,7 @@ import type { FC } from 'react'
 import type { JSONDataTypes } from '@adonisjs/core/types/transformers'
 import ConfirmDialog from '~/components/confirm_dialog'
 import StatusBadge from '~/components/status_badge'
+import AttachmentList from '~/components/attachment_list'
 
 interface Project {
   [key: string]: JSONDataTypes
@@ -50,6 +51,8 @@ interface ProjectShowProps {
   canManageTasks: boolean
   canManageProject: boolean
   canComment: boolean
+  canAttach: boolean
+  attachments: AttachmentItem[]
   taskStatusFilter: TaskFilter
   taskStatusOptions: TaskFilter[]
 }
@@ -68,6 +71,18 @@ interface Task {
   dueDate: string | null
   createdAt: string
   updatedAt: string
+}
+
+interface AttachmentItem {
+  id: number
+  projectId: number
+  taskId: number | null
+  userId: number
+  fileName: string
+  originalName: string
+  mimeType: string
+  fileSize: number
+  createdAt: string
 }
 
 interface CommentItem {
@@ -146,6 +161,8 @@ const ProjectShow: FC<ProjectShowProps> = ({
   canManageTasks,
   canManageProject,
   canComment,
+  canAttach,
+  attachments,
   taskStatusFilter,
   taskStatusOptions,
 }) => {
@@ -1096,6 +1113,12 @@ const ProjectShow: FC<ProjectShowProps> = ({
                 </div>
               )}
             </section>
+
+            <AttachmentList
+              projectId={project.id}
+              attachments={attachments}
+              canAttach={canAttach}
+            />
 
             <section className="rounded-lg border border-[var(--gray-3)] bg-[var(--surface)] p-5 shadow-[0_12px_35px_color-mix(in_oklab,var(--gray-12)_8%,transparent)]">
               <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--gray-7)]">

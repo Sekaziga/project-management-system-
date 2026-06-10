@@ -16,6 +16,7 @@ const ProjectsController = () => import('#controllers/projects_controller')
 const CommentsController = () => import('#controllers/comments_controller')
 const ProjectMembersController = () => import('#controllers/project_members_controller')
 const TasksController = () => import('#controllers/tasks_controller')
+const AttachmentsController = () => import('#controllers/attachments_controller')
 
 router
   .get('/', async ({ inertia, auth, response }) => {
@@ -73,5 +74,18 @@ router
       .as('tasks.destroy')
 
     router.post('/projects/:projectId/comments', [CommentsController, 'store']).as('comments.store')
+
+    router
+      .get('/projects/:projectId/attachments', [AttachmentsController, 'index'])
+      .as('attachments.index')
+    router
+      .post('/projects/:projectId/attachments', [AttachmentsController, 'store'])
+      .as('attachments.store')
+    router
+      .get('/projects/:projectId/attachments/:id/download', [AttachmentsController, 'show'])
+      .as('attachments.download')
+    router
+      .delete('/projects/:projectId/attachments/:id', [AttachmentsController, 'destroy'])
+      .as('attachments.destroy')
   })
   .use(middleware.auth())

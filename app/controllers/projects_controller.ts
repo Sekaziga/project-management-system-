@@ -6,6 +6,7 @@ import type Comment from '#models/comment'
 import type ActivityLog from '#models/activity_log'
 import { createProjectValidator, updateProjectValidator } from '#validators/project'
 import type Task from '#models/task'
+import type Attachment from '#models/attachment'
 import { taskStatuses } from '#validators/task'
 import ProjectPolicy from '#policies/project_policy'
 import { resolveProjectRole } from '#services/project_access'
@@ -67,6 +68,20 @@ export default class ProjectsController {
       fullName: user.fullName,
       email: user.email,
       initials: user.initials,
+    }
+  }
+
+  private serializeAttachment(attachment: Attachment) {
+    return {
+      id: attachment.id,
+      projectId: attachment.projectId,
+      taskId: attachment.taskId,
+      userId: attachment.userId,
+      fileName: attachment.fileName,
+      originalName: attachment.originalName,
+      mimeType: attachment.mimeType,
+      fileSize: attachment.fileSize,
+      createdAt: attachment.createdAt.toISO() ?? '',
     }
   }
 
@@ -190,6 +205,10 @@ export default class ProjectsController {
       activityQuery.preload('user').orderBy('created_at', 'desc').limit(20)
     })
 
+    await project.load('attachments', (attachmentsQuery) => {
+      attachmentsQuery.orderBy('created_at', 'desc')
+    })
+
     return inertia.render(
       'Projects/Show' as never,
       {
@@ -221,12 +240,19 @@ export default class ProjectsController {
         },
         currentUserRole,
         canManageMembers: currentUserRole === 'owner' || currentUserRole === 'admin',
+        canAttach:
+          currentUserRole === 'owner' ||
+          currentUserRole === 'admin' ||
+          currentUserRole === 'member',
         canManageTasks:
           currentUserRole === 'owner' ||
           currentUserRole === 'admin' ||
           currentUserRole === 'member',
         canManageProject: currentUserRole === 'owner' || currentUserRole === 'admin',
         canComment: currentUserRole !== null,
+        attachments: project.attachments.map((attachment) =>
+          this.serializeAttachment(attachment)
+        ),
         taskStatusFilter: selectedTaskStatus,
         taskStatusOptions: ['all', ...taskStatuses],
       } as never

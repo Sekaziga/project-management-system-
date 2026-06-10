@@ -9,6 +9,8 @@ export type ActivityAction =
   | 'task_updated'
   | 'task_deleted'
   | 'comment_created'
+  | 'attachment_added'
+  | 'attachment_removed'
 
 type ActivityMetadata = Record<string, unknown>
 
@@ -39,6 +41,14 @@ export function describeActivity(action: ActivityAction, metadata?: ActivityMeta
       return metadata?.taskTitle ? `Deleted task "${metadata.taskTitle}"` : 'Deleted a task'
     case 'comment_created':
       return 'Added a comment'
+    case 'attachment_added':
+      return metadata?.fileName
+        ? `Attached "${metadata.fileName}"`
+        : 'Added an attachment'
+    case 'attachment_removed':
+      return metadata?.fileName
+        ? `Removed attachment "${metadata.fileName}"`
+        : 'Removed an attachment'
     default:
       return 'Updated the project'
   }

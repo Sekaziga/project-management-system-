@@ -295,4 +295,52 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/comments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'attachments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/projects/:projectId/attachments'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['index']>>>
+    }
+  }
+  'attachments.store': {
+    methods: ["POST"]
+    pattern: '/projects/:projectId/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').createAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { projectId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').createAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'attachments.download': {
+    methods: ["GET","HEAD"]
+    pattern: '/projects/:projectId/attachments/:id/download'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['show']>>>
+    }
+  }
+  'attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/projects/:projectId/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { projectId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['destroy']>>>
+    }
+  }
 }
