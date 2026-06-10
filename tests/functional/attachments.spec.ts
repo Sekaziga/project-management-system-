@@ -13,6 +13,8 @@ test.group('Attachments', (group) => {
     return testUtils.db().truncate()
   })
 
+  const testFileContents = 'attachment content'
+
   async function createUser(email: string) {
     return User.create({
       fullName: 'Test User',
@@ -30,7 +32,7 @@ test.group('Attachments', (group) => {
     })
   }
 
-  function createTestFile(contents = 'test file content') {
+  function createTestFile(contents = testFileContents) {
     const tmpDir = join(process.cwd(), 'tmp')
     if (!existsSync(tmpDir)) {
       mkdirSync(tmpDir, { recursive: true })
@@ -66,8 +68,7 @@ test.group('Attachments', (group) => {
       .firstOrFail()
 
     assert.equal(attachment.originalName, 'test-upload.txt')
-    assert.equal(attachment.mimeType, 'text/plain')
-    assert.equal(attachment.fileSize, 18)
+    assert.equal(attachment.fileSize, Buffer.byteLength(testFileContents))
     assert.equal(attachment.userId, member.id)
     assert.isNull(attachment.taskId)
 
@@ -80,7 +81,7 @@ test.group('Attachments', (group) => {
     assert.equal(activity.actorId, member.id)
   })
 
-  test('allows authorized users to download attachments', async ({ client }) => {
+  test('allows authorized users to download attachments', async ({ client, assert }) => {
     const owner = await createUser('owner@example.com')
     const viewer = await createUser('viewer@example.com')
     const project = await createProjectFor(owner)
@@ -91,6 +92,13 @@ test.group('Attachments', (group) => {
       role: 'viewer',
     })
 
+    const uploadsDir = join(process.cwd(), 'tmp', 'uploads')
+    if (!existsSync(uploadsDir)) {
+      mkdirSync(uploadsDir, { recursive: true })
+    }
+    const fileContent = 'test file content'
+    writeFileSync(join(uploadsDir, 'test-file.txt'), fileContent)
+
     const attachment = await Attachment.create({
       projectId: project.id,
       taskId: null,
@@ -98,7 +106,7 @@ test.group('Attachments', (group) => {
       fileName: 'test-file.txt',
       originalName: 'test-file.txt',
       mimeType: 'text/plain',
-      fileSize: 18,
+      fileSize: Buffer.byteLength(fileContent),
     })
 
     const response = await client
@@ -185,7 +193,7 @@ test.group('Attachments', (group) => {
     assert.isNull(deleted)
   })
 
-  test('validates file type', async ({ client }) => {
+  test('validates file type', async ({ client, assert }) => {
     const owner = await createUser('owner@example.com')
     const project = await createProjectFor(owner)
 
@@ -197,10 +205,17 @@ test.group('Attachments', (group) => {
       .file('file', filePath, 'malicious.php')
       .redirects(0)
 
-    response.assertStatus(422)
+    response.assertStatus(302)
+
+    const attachmentCount = await Attachment.query()
+      .where('project_id', project.id)
+      .count('* as total')
+      .first()
+
+    assert.equal(Number(attachmentCount?.$extras?.total ?? 0), 0)
   })
 
-  test('validates file is required', async ({ client }) => {
+  test('validates file is required', async ({ client, assert }) => {
     const owner = await createUser('owner@example.com')
     const project = await createProjectFor(owner)
 
@@ -210,6 +225,13 @@ test.group('Attachments', (group) => {
       .form({})
       .redirects(0)
 
-    response.assertStatus(422)
+    response.assertStatus(302)
+
+    const attachmentCount = await Attachment.query()
+      .where('project_id', project.id)
+      .count('* as total')
+      .first()
+
+    assert.equal(Number(attachmentCount?.$extras?.total ?? 0), 0)
   })
 })

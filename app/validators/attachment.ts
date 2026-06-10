@@ -1,4 +1,5 @@
 import vine from '@vinejs/vine'
+import { extname } from 'node:path'
 
 const allowedMimeTypes = [
   'image/jpeg',
@@ -69,7 +70,7 @@ export function isAllowedFileType(mimeType: string | undefined, extension: strin
     return true
   }
   if (extension) {
-    const ext = extension.replace('.', '').toLowerCase()
+    const ext = extname(extension).slice(1).toLowerCase()
     const expectedMime = extensionMimePrefixMap[ext]
     if (expectedMime && mimeType && mimeType.startsWith(expectedMime.split('/')[0] + '/')) {
       return true
