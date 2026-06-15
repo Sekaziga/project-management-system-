@@ -11,13 +11,14 @@ Assessed from the repository state on `2026-05-22`.
 - Phase 5: `Complete`
 - Phase 6: `Not started`
 - Phase 7: `Not started`
-- Phase 8: `Not started`
+- Phase 8: `Complete`
 - Phase 9: `Not started`
 
 Notes:
 
 - Phase 1 is implemented in the codebase: project validation, ownership enforcement, cross-user access tests, named route consistency, and unauthorized error handling are in place.
 - Phase 2 is the best match for the current working phase because the app still uses the default starter home page, so the UI productization pass is not complete yet.
+- Phase 8 implemented: notifications table, model, service, controller, routes, notification triggers (project invites, task created/updated/deleted, comments), notification UI (dropdown in sidebar + full page), read/unread handling, and tests.
 - Verification note: static type checking passes. Runtime PostgreSQL verification should be run locally with Node `>=24`, which matches `package.json`.
 
 ## Phase 1: Stabilize Current Core

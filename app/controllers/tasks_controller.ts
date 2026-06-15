@@ -7,6 +7,7 @@ import { createTaskValidator, updateTaskValidator } from '#validators/task'
 import type { TaskPriority, TaskStatus } from '#validators/task'
 import ProjectPolicy from '#policies/project_policy'
 import { recordActivity } from '#services/activity_log'
+import { notifyProjectMembers } from '#services/notification'
 
 type TaskPayload = {
   title: string
@@ -68,6 +69,16 @@ export default class TasksController {
       metadata: { taskTitle: task.title },
     })
 
+    await notifyProjectMembers(
+      project.id,
+      auth.user!.id,
+      'task_created',
+      `Task "${task.title}" was created`,
+      {
+        taskId: task.id,
+      }
+    )
+
     return response.redirect().back()
   }
 
@@ -87,6 +98,16 @@ export default class TasksController {
       metadata: { taskTitle: task.title },
     })
 
+    await notifyProjectMembers(
+      project.id,
+      auth.user!.id,
+      'task_updated',
+      `Task "${task.title}" was updated`,
+      {
+        taskId: task.id,
+      }
+    )
+
     return response.redirect().back()
   }
 
@@ -94,13 +115,22 @@ export default class TasksController {
     const project = await this.findManageableProjectOrFail(params.projectId, auth.user!.id)
     const task = await this.findProjectTaskOrFail(project.id, params.id)
 
+    const taskTitle = task.title
+
     await recordActivity({
       projectId: project.id,
       taskId: task.id,
       actorId: auth.user!.id,
       action: 'task_deleted',
-      metadata: { taskTitle: task.title },
+      metadata: { taskTitle },
     })
+
+    await notifyProjectMembers(
+      project.id,
+      auth.user!.id,
+      'task_deleted',
+      `Task "${taskTitle}" was deleted`
+    )
 
     await task.delete()
 

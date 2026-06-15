@@ -6,6 +6,7 @@ import ProjectMember from '#models/project_member'
 import User from '#models/user'
 import ProjectMemberPolicy from '#policies/project_member_policy'
 import { countProjectAdmins } from '#services/project_access'
+import { createNotification } from '#services/notification'
 import {
   inviteProjectMemberValidator,
   updateProjectMemberValidator,
@@ -74,6 +75,14 @@ export default class ProjectMembersController {
       projectId: project.id,
       userId: user.id,
       role: data.role,
+    })
+
+    await createNotification({
+      userId: user.id,
+      projectId: project.id,
+      actorId: auth.user!.id,
+      type: 'project_invite',
+      title: `You were invited to "${project.name}" as ${data.role}`,
     })
 
     return response.redirect().back()
