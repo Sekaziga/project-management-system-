@@ -17,6 +17,7 @@ const CommentsController = () => import('#controllers/comments_controller')
 const ProjectMembersController = () => import('#controllers/project_members_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 const AttachmentsController = () => import('#controllers/attachments_controller')
+const NotificationsController = () => import('#controllers/notifications_controller')
 
 router
   .get('/', async ({ inertia, auth, response }) => {
@@ -87,5 +88,19 @@ router
     router
       .delete('/projects/:projectId/attachments/:id', [AttachmentsController, 'destroy'])
       .as('attachments.destroy')
+
+    router.get('/notifications', [NotificationsController, 'index']).as('notifications.index')
+    router
+      .put('/notifications/:id/read', [NotificationsController, 'markAsRead'])
+      .as('notifications.read')
+    router
+      .put('/notifications/read-all', [NotificationsController, 'markAllAsRead'])
+      .as('notifications.readAll')
+    router
+      .get('/notifications/unread-count', [NotificationsController, 'unreadCount'])
+      .as('notifications.unreadCount')
+    router
+      .get('/notifications/recent', [NotificationsController, 'recent'])
+      .as('notifications.recent')
   })
   .use(middleware.auth())

@@ -5,6 +5,7 @@ import { errors } from '@adonisjs/core'
 import { createCommentValidator } from '#validators/comment'
 import { recordActivity } from '#services/activity_log'
 import ProjectPolicy from '#policies/project_policy'
+import { notifyProjectMembers } from '#services/notification'
 
 export default class CommentsController {
   private async findAccessibleProjectOrFail(projectId: number | string, userId: number) {
@@ -34,6 +35,17 @@ export default class CommentsController {
       actorId: auth.user!.id,
       action: 'comment_created',
     })
+
+    const bodyPreview = data.body.length > 100 ? `${data.body.slice(0, 100)}...` : data.body
+    await notifyProjectMembers(
+      project.id,
+      auth.user!.id,
+      'comment_created',
+      `New comment on "${project.name}"`,
+      {
+        metadata: { preview: bodyPreview },
+      }
+    )
 
     return response.redirect().back()
   }

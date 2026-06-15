@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Form, Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import ThemeToggle from './theme-toggle'
+import NotificationBell from './notification_bell'
 
 interface User {
   initials: string
@@ -132,6 +133,12 @@ export default function Sidebar({ user }: SidebarProps) {
             )
           })}
         </nav>
+
+        {user && (
+          <div className="px-3 py-2">
+            <NotificationBell collapsed={collapsed} />
+          </div>
+        )}
 
         <div className={`border-t border-[var(--gray-3)] p-3 space-y-2`}>
           <ThemeToggle collapsed={collapsed} />
