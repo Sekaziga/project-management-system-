@@ -68,6 +68,33 @@ export class CommentSchema extends BaseModel {
   declare userId: number
 }
 
+export class NotificationSchema extends BaseModel {
+  static $columns = ['actorId', 'body', 'createdAt', 'id', 'metadata', 'projectId', 'readAt', 'taskId', 'title', 'type', 'userId'] as const
+  $columns = NotificationSchema.$columns
+  @column()
+  declare actorId: number | null
+  @column()
+  declare body: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare projectId: number | null
+  @column.dateTime()
+  declare readAt: DateTime | null
+  @column()
+  declare taskId: number | null
+  @column()
+  declare title: string
+  @column()
+  declare type: string
+  @column()
+  declare userId: number
+}
+
 export class ProjectMemberSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'projectId', 'role', 'updatedAt', 'userId'] as const
   $columns = ProjectMemberSchema.$columns
