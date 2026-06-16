@@ -343,4 +343,64 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/attachments_controller').default['destroy']>>>
     }
   }
+  'notifications.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/notifications'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+    }
+  }
+  'notifications.read': {
+    methods: ["PUT"]
+    pattern: '/notifications/:id/read'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAsRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAsRead']>>>
+    }
+  }
+  'notifications.readAll': {
+    methods: ["PUT"]
+    pattern: '/notifications/read-all'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllAsRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllAsRead']>>>
+    }
+  }
+  'notifications.unreadCount': {
+    methods: ["GET","HEAD"]
+    pattern: '/notifications/unread-count'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['unreadCount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['unreadCount']>>>
+    }
+  }
+  'notifications.recent': {
+    methods: ["GET","HEAD"]
+    pattern: '/notifications/recent'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['recent']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['recent']>>>
+    }
+  }
 }

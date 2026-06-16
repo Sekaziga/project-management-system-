@@ -32,6 +32,11 @@ export type ScannedRoutes = {
     'attachments.store': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'attachments.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'notifications.readAll': { paramsTuple?: []; params?: {} }
+    'notifications.unreadCount': { paramsTuple?: []; params?: {} }
+    'notifications.recent': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -45,6 +50,9 @@ export type ScannedRoutes = {
     'projects.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'attachments.index': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.unreadCount': { paramsTuple?: []; params?: {} }
+    'notifications.recent': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -58,6 +66,9 @@ export type ScannedRoutes = {
     'projects.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'attachments.index': { paramsTuple: [ParamValue]; params: {'projectId': ParamValue} }
     'attachments.download': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.unreadCount': { paramsTuple?: []; params?: {} }
+    'notifications.recent': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'signup.store': { paramsTuple?: []; params?: {} }
@@ -75,6 +86,8 @@ export type ScannedRoutes = {
     'projects.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'projects.members.update': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
     'tasks.update': { paramsTuple: [ParamValue,ParamValue]; params: {'projectId': ParamValue,'id': ParamValue} }
+    'notifications.read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'notifications.readAll': { paramsTuple?: []; params?: {} }
   }
   DELETE: {
     'projects.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

@@ -174,6 +174,36 @@ const routes = {
     tokens: [{"old":"/projects/:projectId/attachments/:id","type":0,"val":"projects","end":""},{"old":"/projects/:projectId/attachments/:id","type":1,"val":"projectId","end":""},{"old":"/projects/:projectId/attachments/:id","type":0,"val":"attachments","end":""},{"old":"/projects/:projectId/attachments/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['attachments.destroy']['types'],
   },
+  'notifications.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/notifications',
+    tokens: [{"old":"/notifications","type":0,"val":"notifications","end":""}],
+    types: placeholder as Registry['notifications.index']['types'],
+  },
+  'notifications.read': {
+    methods: ["PUT"],
+    pattern: '/notifications/:id/read',
+    tokens: [{"old":"/notifications/:id/read","type":0,"val":"notifications","end":""},{"old":"/notifications/:id/read","type":1,"val":"id","end":""},{"old":"/notifications/:id/read","type":0,"val":"read","end":""}],
+    types: placeholder as Registry['notifications.read']['types'],
+  },
+  'notifications.readAll': {
+    methods: ["PUT"],
+    pattern: '/notifications/read-all',
+    tokens: [{"old":"/notifications/read-all","type":0,"val":"notifications","end":""},{"old":"/notifications/read-all","type":0,"val":"read-all","end":""}],
+    types: placeholder as Registry['notifications.readAll']['types'],
+  },
+  'notifications.unreadCount': {
+    methods: ["GET","HEAD"],
+    pattern: '/notifications/unread-count',
+    tokens: [{"old":"/notifications/unread-count","type":0,"val":"notifications","end":""},{"old":"/notifications/unread-count","type":0,"val":"unread-count","end":""}],
+    types: placeholder as Registry['notifications.unreadCount']['types'],
+  },
+  'notifications.recent': {
+    methods: ["GET","HEAD"],
+    pattern: '/notifications/recent',
+    tokens: [{"old":"/notifications/recent","type":0,"val":"notifications","end":""},{"old":"/notifications/recent","type":0,"val":"recent","end":""}],
+    types: placeholder as Registry['notifications.recent']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

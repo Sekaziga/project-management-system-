@@ -44,4 +44,11 @@ export interface ApiDefinition {
     download: typeof routes['attachments.download']
     destroy: typeof routes['attachments.destroy']
   }
+  notifications: {
+    index: typeof routes['notifications.index']
+    read: typeof routes['notifications.read']
+    readAll: typeof routes['notifications.readAll']
+    unreadCount: typeof routes['notifications.unreadCount']
+    recent: typeof routes['notifications.recent']
+  }
 }
